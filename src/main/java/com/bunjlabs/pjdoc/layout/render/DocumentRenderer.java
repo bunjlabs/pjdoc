@@ -41,8 +41,8 @@ public final class DocumentRenderer implements ElementRenderContext {
         LayoutState layoutState = new LayoutState();
         layoutState.setBlockContentStartX(effectiveArea.getLowerLeftX());
         layoutState.setBlockContentStartY(effectiveArea.getUpperRightY());
-        layoutState.setBlockContentWidth(effectiveArea.getWidth());
-        layoutState.setBlockContentHeigth(0);
+        layoutState.setBlockWidth(effectiveArea.getWidth());
+        layoutState.setBlockHeight(effectiveArea.getHeight());
 
         layoutStateStack.push(layoutState);
 

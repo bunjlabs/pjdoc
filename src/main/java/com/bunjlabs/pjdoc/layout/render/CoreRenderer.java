@@ -22,28 +22,11 @@ public class CoreRenderer {
 
     public Set<ElementRenderingHandler<?>> getElementRenderingHandlers() {
         return new HashSet<>(Arrays.asList(
-                new ElementRenderingHandler<Paragraph>(Paragraph.class, (Paragraph e, ElementRenderContext c) -> CoreRenderer.this.render(e, c)),
                 new ElementRenderingHandler<Text>(Text.class, (Text e, ElementRenderContext c) -> CoreRenderer.this.render(e, c)),
+                new ElementRenderingHandler<Paragraph>(Paragraph.class, (Paragraph e, ElementRenderContext c) -> CoreRenderer.this.render(e, c)),
                 new ElementRenderingHandler<Div>(Div.class, (Div e, ElementRenderContext c) -> CoreRenderer.this.render(e, c)),
                 new ElementRenderingHandler<Flex>(Flex.class, (Flex e, ElementRenderContext c) -> CoreRenderer.this.render(e, c))
         ));
-    }
-
-    private void render(Paragraph e, ElementRenderContext c) throws IOException {
-        LayoutState parentLayoutState = c.getLayoutStateStack().peek();
-
-        LayoutState layoutState = new LayoutState();
-        layoutState.setBlockContentStartX(parentLayoutState.getBlockContentStartX());
-        layoutState.setBlockContentStartY(parentLayoutState.getBlockContentStartY() - parentLayoutState.getBlockContentHeigth());
-        layoutState.setBlockContentWidth(parentLayoutState.getBlockContentWidth());
-        layoutState.setBlockContentHeigth(0);
-        c.getLayoutStateStack().push(layoutState);
-
-        c.renderChildren(e);
-
-        parentLayoutState.addBlockContentHeigth(layoutState.getBlockContentHeigth());
-
-        c.getLayoutStateStack().pop();
     }
 
     private void render(Text e, ElementRenderContext c) throws IOException {
@@ -55,9 +38,9 @@ public class CoreRenderer {
         float leading = e.getAttribute(Attribute.LEADING, 1.5f) * fontSize;
         String text = e.getText();
 
-        float width = parentLayoutState.getBlockContentWidth();
+        float width = parentLayoutState.getBlockWidth();
         float startX = parentLayoutState.getBlockContentStartX();
-        float startY = parentLayoutState.getBlockContentStartY() - parentLayoutState.getBlockContentHeigth();
+        float startY = parentLayoutState.getBlockContentStartY() - parentLayoutState.getBlockContentHeight();
 
         int lastSpace = -1;
 
@@ -89,7 +72,7 @@ public class CoreRenderer {
 
         float textWidth = lines.size() * leading;
 
-        parentLayoutState.addBlockContentHeigth(textWidth);
+        parentLayoutState.addBlockContentHeight(textWidth);
 
         stream.beginText();
         stream.setRenderingMode(RenderingMode.FILL);
@@ -105,37 +88,81 @@ public class CoreRenderer {
         stream.endText();
     }
 
-    private void render(Div e, ElementRenderContext c) throws IOException {
+    private void render(Paragraph e, ElementRenderContext c) throws IOException {
         LayoutState parentLayoutState = c.getLayoutStateStack().peek();
 
         LayoutState layoutState = new LayoutState();
-        layoutState.setBlockContentStartX(parentLayoutState.getBlockContentStartX());
-        layoutState.setBlockContentStartY(parentLayoutState.getBlockContentStartY() - parentLayoutState.getBlockContentHeigth());
-        layoutState.setBlockContentWidth(parentLayoutState.getBlockContentWidth());
-        layoutState.setBlockContentHeigth(0);
+        layoutState.setBlockContentStartX(
+                parentLayoutState.getBlockContentStartX()
+                + e.getAttribute(Attribute.MARGIN_LEFT, 0f)
+                + e.getAttribute(Attribute.PADDING_LEFT, 0f)
+        );
+        layoutState.setBlockContentStartY(
+                parentLayoutState.getBlockContentStartY()
+                - parentLayoutState.getBlockContentHeight()
+                - e.getAttribute(Attribute.MARGIN_TOP, 0f)
+                - e.getAttribute(Attribute.PADDING_TOP, 0f)
+        );
+        layoutState.setBlockWidth(
+                parentLayoutState.getBlockWidth()
+                - e.getAttribute(Attribute.MARGIN_RIGHT, 0f)
+                - e.getAttribute(Attribute.PADDING_RIGHT, 0f)
+        );
+        layoutState.setBlockHeight(e.getAttribute(Attribute.MARGIN_TOP, 0f));
+
         c.getLayoutStateStack().push(layoutState);
 
         c.renderChildren(e);
 
-        parentLayoutState.addBlockContentHeigth(layoutState.getBlockContentHeigth());
+        layoutState.addBlockContentHeight(e.getAttribute(Attribute.PADDING_BOTTOM, 0f));
+        layoutState.addBlockHeight(
+                layoutState.getBlockContentHeight()
+                + e.getAttribute(Attribute.MARGIN_BOTTOM, 0f)
+        );
+
+        parentLayoutState.addBlockContentHeight(layoutState.getBlockHeight());
+
+        c.getLayoutStateStack().pop();
+    }
+
+    private void render(Div e, ElementRenderContext c) throws IOException {
+        LayoutState parentLayoutState = c.getLayoutStateStack().peek();
+
+        LayoutState layoutState = new LayoutState();
+        layoutState.setBlockContentStartX(
+                parentLayoutState.getBlockContentStartX()
+                + e.getAttribute(Attribute.MARGIN_LEFT, 0f)
+                + e.getAttribute(Attribute.PADDING_LEFT, 0f)
+        );
+        layoutState.setBlockContentStartY(
+                parentLayoutState.getBlockContentStartY()
+                - parentLayoutState.getBlockContentHeight()
+                - e.getAttribute(Attribute.MARGIN_TOP, 0f)
+                - e.getAttribute(Attribute.PADDING_TOP, 0f)
+        );
+        layoutState.setBlockWidth(
+                parentLayoutState.getBlockWidth()
+                - e.getAttribute(Attribute.MARGIN_RIGHT, 0f)
+                - e.getAttribute(Attribute.PADDING_RIGHT, 0f)
+        );
+        layoutState.setBlockHeight(e.getAttribute(Attribute.MARGIN_TOP, 0f));
+
+        c.getLayoutStateStack().push(layoutState);
+
+        c.renderChildren(e);
+
+        layoutState.addBlockContentHeight(e.getAttribute(Attribute.PADDING_BOTTOM, 0f));
+        layoutState.addBlockHeight(
+                layoutState.getBlockContentHeight()
+                + e.getAttribute(Attribute.MARGIN_BOTTOM, 0f)
+        );
+
+        parentLayoutState.addBlockContentHeight(layoutState.getBlockHeight());
 
         c.getLayoutStateStack().pop();
     }
 
     private void render(Flex e, ElementRenderContext c) throws IOException {
-        LayoutState parentLayoutState = c.getLayoutStateStack().peek();
-
-        LayoutState layoutState = new LayoutState();
-        layoutState.setBlockContentStartX(parentLayoutState.getBlockContentStartX());
-        layoutState.setBlockContentStartY(parentLayoutState.getBlockContentStartY() - parentLayoutState.getBlockContentHeigth());
-        layoutState.setBlockContentWidth(parentLayoutState.getBlockContentWidth());
-        layoutState.setBlockContentHeigth(0);
-        c.getLayoutStateStack().push(layoutState);
-
         c.renderChildren(e);
-
-        parentLayoutState.addBlockContentHeigth(layoutState.getBlockContentHeigth());
-
-        c.getLayoutStateStack().pop();
     }
 }

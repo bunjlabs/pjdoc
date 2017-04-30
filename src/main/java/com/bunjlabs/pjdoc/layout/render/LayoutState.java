@@ -11,18 +11,11 @@ public class LayoutState {
     private float blockContentStartX;
     private float blockContentStartY;
     private float blockContentWidth;
-    private float blockContentHeigth;
+    private float blockContentHeight;
+    private float blockWidth;
+    private float blockHeight;
 
     public LayoutState() {
-        blockContentWidth = 0;
-        blockContentHeigth = 0;
-    }
-
-    public LayoutState(LayoutState layoutState) {
-        this.blockContentStartX = layoutState.blockContentStartX;
-        this.blockContentStartY = layoutState.blockContentStartY;
-        this.blockContentWidth = layoutState.blockContentWidth;
-        this.blockContentHeigth = layoutState.blockContentHeigth;
     }
 
     public float getBlockContentWidth() {
@@ -37,16 +30,16 @@ public class LayoutState {
         this.blockContentWidth += blockContentWidth;
     }
 
-    public float getBlockContentHeigth() {
-        return blockContentHeigth;
+    public float getBlockContentHeight() {
+        return blockContentHeight;
     }
 
-    public void setBlockContentHeigth(float blockContentHeigth) {
-        this.blockContentHeigth = blockContentHeigth;
+    public void setBlockContentHeight(float blockContentHeight) {
+        this.blockContentHeight = blockContentHeight;
     }
 
-    public void addBlockContentHeigth(float blockContentHeigth) {
-        this.blockContentHeigth += blockContentHeigth;
+    public void addBlockContentHeight(float blockContentHeight) {
+        this.blockContentHeight += blockContentHeight;
     }
 
     public float getBlockContentStartX() {
@@ -63,5 +56,29 @@ public class LayoutState {
 
     public void setBlockContentStartY(float blockContentStartY) {
         this.blockContentStartY = blockContentStartY;
+    }
+
+    public float getBlockWidth() {
+        return blockWidth;
+    }
+
+    public void addBlockWidth(float blockWidth) {
+        this.blockWidth += blockWidth;
+    }
+
+    public void setBlockWidth(float blockWidth) {
+        this.blockWidth = blockWidth;
+    }
+
+    public float getBlockHeight() {
+        return blockHeight;
+    }
+
+    public void setBlockHeight(float blockHeight) {
+        this.blockHeight = blockHeight;
+    }
+
+    public void addBlockHeight(float blockHeight) {
+        this.blockHeight += blockHeight;
     }
 }

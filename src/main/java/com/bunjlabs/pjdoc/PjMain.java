@@ -21,32 +21,39 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
  * @author Artem Shurygin <artem.shurygin@bunjlabs.com>
  */
 public class PjMain {
-    
+
     public static void main(String[] args) throws FileNotFoundException, ScriptException, IOException {
         PDDocument pDDocument = new PDDocument();
         //pDDocument.getDocumentInformation().setProducer("pjDoc");
         //pDDocument.setVersion(1.5f);
 
         PDFont font = PDType0Font.load(pDDocument, new File("./fonts/roboto/Roboto-Thin.ttf"));
-        
+
         Div div = new Div();
-        div.addStyle(new Style().setFont(font).setLeading(1));
-        
+        div.addStyle(new Style()
+                .setFont(font)
+                .setLeading(1)
+        );
+
         for (int i = 0; i < 26; i++) {
             Paragraph paragraph = new Paragraph();
             paragraph.add(UnitUtils.pangram(26));
-            paragraph.addStyle(new Style().setFontSize(8 + i));
+            paragraph.addStyle(new Style()
+                    .setFontSize(8 + i)
+                    .setPaddingLeft(UnitUtils.mm(i))
+                    .setMarginRight(UnitUtils.mm(50))
+            );
             div.add(paragraph);
         }
-        
+
         Document document = new Document(PDRectangle.A4);
         document.add(div);
-        
+
         DocumentRenderer documentRenderer = new DocumentRenderer(pDDocument, document);
         documentRenderer.renderDocument();
-        
+
         pDDocument.save("./example.pdf");
         pDDocument.close();
     }
-    
+
 }
