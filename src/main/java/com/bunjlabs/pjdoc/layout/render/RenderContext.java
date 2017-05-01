@@ -1,4 +1,4 @@
-package com.bunjlabs.pjdoc.render;
+package com.bunjlabs.pjdoc.layout.render;
 
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 

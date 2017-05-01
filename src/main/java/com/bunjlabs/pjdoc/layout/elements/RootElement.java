@@ -1,9 +1,9 @@
 package com.bunjlabs.pjdoc.layout.elements;
 
-import com.bunjlabs.pjdoc.layout.Attribute;
-import com.bunjlabs.pjdoc.layout.ElementAttributeContainer;
-import com.bunjlabs.pjdoc.layout.IAttributeContainer;
-import com.bunjlabs.pjdoc.layout.Style;
+import com.bunjlabs.pjdoc.layout.attributes.Attribute;
+import com.bunjlabs.pjdoc.layout.attributes.ElementAttributeContainer;
+import com.bunjlabs.pjdoc.layout.attributes.IAttributeContainer;
+import com.bunjlabs.pjdoc.layout.attributes.Style;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;

@@ -1,6 +1,6 @@
-package com.bunjlabs.pjdoc.render;
+package com.bunjlabs.pjdoc.layout.render;
 
-import com.bunjlabs.pjdoc.layout.Attribute;
+import com.bunjlabs.pjdoc.layout.attributes.Attribute;
 import com.bunjlabs.pjdoc.layout.elements.Text;
 import java.awt.Color;
 import java.io.IOException;
@@ -74,6 +74,7 @@ public class TextRenderer extends Renderer<Text> {
             }
 
             stream.endText();
+            stream.restoreGraphicsState();
         } catch (IOException e) {
             e.printStackTrace();
         }

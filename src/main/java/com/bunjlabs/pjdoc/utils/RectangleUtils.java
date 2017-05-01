@@ -1,4 +1,4 @@
-package com.bunjlabs.pjdoc.layout;
+package com.bunjlabs.pjdoc.utils;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 

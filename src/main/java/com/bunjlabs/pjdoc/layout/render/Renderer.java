@@ -1,7 +1,7 @@
-package com.bunjlabs.pjdoc.render;
+package com.bunjlabs.pjdoc.layout.render;
 
-import com.bunjlabs.pjdoc.layout.Attribute;
-import com.bunjlabs.pjdoc.layout.IAttributeContainer;
+import com.bunjlabs.pjdoc.layout.attributes.Attribute;
+import com.bunjlabs.pjdoc.layout.attributes.IAttributeContainer;
 import com.bunjlabs.pjdoc.layout.elements.Element;
 import java.util.LinkedList;
 import java.util.List;

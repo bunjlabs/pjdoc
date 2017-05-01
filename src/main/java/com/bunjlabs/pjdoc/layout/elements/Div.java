@@ -1,7 +1,7 @@
 package com.bunjlabs.pjdoc.layout.elements;
 
-import com.bunjlabs.pjdoc.render.DivRenderer;
-import com.bunjlabs.pjdoc.render.Renderer;
+import com.bunjlabs.pjdoc.layout.render.DivRenderer;
+import com.bunjlabs.pjdoc.layout.render.Renderer;
 
 /**
  *

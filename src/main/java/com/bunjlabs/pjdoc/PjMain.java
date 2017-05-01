@@ -1,11 +1,11 @@
 package com.bunjlabs.pjdoc;
 
 import com.bunjlabs.pjdoc.layout.elements.Document;
-import com.bunjlabs.pjdoc.layout.Style;
-import com.bunjlabs.pjdoc.layout.UnitUtils;
+import com.bunjlabs.pjdoc.layout.attributes.Style;
+import com.bunjlabs.pjdoc.utils.UnitUtils;
 import com.bunjlabs.pjdoc.layout.elements.Div;
 import com.bunjlabs.pjdoc.layout.elements.Paragraph;
-import com.bunjlabs.pjdoc.render.DocumentRenderer;
+import com.bunjlabs.pjdoc.layout.render.DocumentRenderer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -69,6 +69,8 @@ public class PjMain {
 
     public static void main(String[] args) throws FileNotFoundException, ScriptException, IOException {
         PDDocument pDDocument = new PDDocument();
+        pDDocument.getDocumentInformation().setProducer("pjDoc");
+        pDDocument.setVersion(1.5f);
 
         //test01(pDDocument);
         test02(pDDocument);

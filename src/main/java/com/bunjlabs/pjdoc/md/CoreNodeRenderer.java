@@ -1,6 +1,6 @@
 package com.bunjlabs.pjdoc.md;
 
-import com.bunjlabs.pjdoc.layout.Style;
+import com.bunjlabs.pjdoc.layout.attributes.Style;
 import com.bunjlabs.pjdoc.layout.elements.Element;
 import com.vladsch.flexmark.ast.*;
 import java.util.Arrays;

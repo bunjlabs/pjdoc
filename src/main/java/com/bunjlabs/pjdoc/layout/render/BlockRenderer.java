@@ -1,7 +1,7 @@
-package com.bunjlabs.pjdoc.render;
+package com.bunjlabs.pjdoc.layout.render;
 
-import com.bunjlabs.pjdoc.layout.Attribute;
-import com.bunjlabs.pjdoc.layout.RectangleUtils;
+import com.bunjlabs.pjdoc.layout.attributes.Attribute;
+import com.bunjlabs.pjdoc.utils.RectangleUtils;
 import com.bunjlabs.pjdoc.layout.elements.BlockElement;
 import java.util.Iterator;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
