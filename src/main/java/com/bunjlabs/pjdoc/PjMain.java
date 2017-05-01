@@ -5,8 +5,7 @@ import com.bunjlabs.pjdoc.layout.Style;
 import com.bunjlabs.pjdoc.layout.UnitUtils;
 import com.bunjlabs.pjdoc.layout.elements.Div;
 import com.bunjlabs.pjdoc.layout.elements.Paragraph;
-import com.bunjlabs.pjdoc.layout.render.DocumentRenderer;
-import java.awt.Color;
+import com.bunjlabs.pjdoc.render.DocumentRenderer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,11 +21,8 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
  */
 public class PjMain {
 
-    public static void main(String[] args) throws FileNotFoundException, ScriptException, IOException {
-        PDDocument pDDocument = new PDDocument();
-        //pDDocument.getDocumentInformation().setProducer("pjDoc");
-        //pDDocument.setVersion(1.5f);
-
+    public static void test01(PDDocument pDDocument) throws IOException {
+        Document document = new Document(PDRectangle.A4);
         PDFont font = PDType0Font.load(pDDocument, new File("./fonts/roboto/Roboto-Thin.ttf"));
 
         Div div = new Div();
@@ -38,6 +34,7 @@ public class PjMain {
         for (int i = 0; i < 26; i++) {
             Paragraph paragraph = new Paragraph();
             paragraph.add(UnitUtils.pangram(26));
+            paragraph.add(UnitUtils.pangram(26));
             paragraph.addStyle(new Style()
                     .setFontSize(8 + i)
                     .setPaddingLeft(UnitUtils.mm(i))
@@ -46,11 +43,35 @@ public class PjMain {
             div.add(paragraph);
         }
 
+        document.add(div);
+    }
+
+    public static void test02(PDDocument pDDocument) throws IOException {
         Document document = new Document(PDRectangle.A4);
+
+        PDFont font = PDType0Font.load(pDDocument, new File("./fonts/roboto/Roboto-Thin.ttf"));
+        Div div = new Div();
+        div.addStyle(new Style().setFont(font));
+
+        for (int i = 0; i < 10; i++) {
+            Paragraph paragraph = new Paragraph();
+            paragraph.add(UnitUtils.pangram());
+
+            div.add(paragraph);
+        }
+
         document.add(div);
 
         DocumentRenderer documentRenderer = new DocumentRenderer(pDDocument, document);
-        documentRenderer.renderDocument();
+        documentRenderer.render();
+
+    }
+
+    public static void main(String[] args) throws FileNotFoundException, ScriptException, IOException {
+        PDDocument pDDocument = new PDDocument();
+
+        //test01(pDDocument);
+        test02(pDDocument);
 
         pDDocument.save("./example.pdf");
         pDDocument.close();

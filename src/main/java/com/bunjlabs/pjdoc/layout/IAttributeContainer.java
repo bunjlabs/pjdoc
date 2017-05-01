@@ -9,6 +9,8 @@ public interface IAttributeContainer {
     public void deleteAttribute(Attribute attr);
 
     public <T1> T1 getAttribute(Attribute attr);
+    
+    public <T1> T1 getAttribute(Attribute attr, T1 defaultValue);
 
     public boolean hasAttribute(Attribute attr);
 

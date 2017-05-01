@@ -1,5 +1,8 @@
 package com.bunjlabs.pjdoc.layout.elements;
 
+import com.bunjlabs.pjdoc.render.Renderer;
+import com.bunjlabs.pjdoc.render.TextRenderer;
+
 /**
  *
  * @author Artem Shurygin <artem.shurygin@bunjlabs.com>
@@ -19,4 +22,10 @@ public final class Text extends Element<Text> {
     public void setText(String text) {
         this.text = text;
     }
+
+    @Override
+    public Renderer createRenderer() {
+        return new TextRenderer(this);
+    }
+
 }

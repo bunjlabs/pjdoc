@@ -1,5 +1,8 @@
 package com.bunjlabs.pjdoc.layout.elements;
 
+import com.bunjlabs.pjdoc.render.ParagraphRenderer;
+import com.bunjlabs.pjdoc.render.Renderer;
+
 /**
  *
  * @author Artem Shurygin <artem.shurygin@bunjlabs.com>
@@ -33,5 +36,10 @@ public final class Paragraph extends BlockElement<Paragraph> {
         elements.forEach((e) -> e.parentElement = this);
         childElements.addAll(elements);
         return this;
+    }
+
+    @Override
+    public Renderer createRenderer() {
+        return new ParagraphRenderer(this);
     }
 }

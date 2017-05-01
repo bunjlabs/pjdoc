@@ -1,5 +1,8 @@
 package com.bunjlabs.pjdoc.layout.elements;
 
+import com.bunjlabs.pjdoc.render.DivRenderer;
+import com.bunjlabs.pjdoc.render.Renderer;
+
 /**
  *
  * @author Artem Shurygin <artem.shurygin@bunjlabs.com>
@@ -10,5 +13,10 @@ public final class Div extends BlockElement<Div> {
         childElements.add(element);
         element.parentElement = this;
         return this;
+    }
+
+    @Override
+    public Renderer createRenderer() {
+        return new DivRenderer(this);
     }
 }

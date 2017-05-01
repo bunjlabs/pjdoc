@@ -1,7 +1,7 @@
 package com.bunjlabs.pjdoc.layout.elements;
 
 import com.bunjlabs.pjdoc.layout.Attribute;
-import com.bunjlabs.pjdoc.layout.Style;
+import com.bunjlabs.pjdoc.render.Renderer;
 
 /**
  *
@@ -60,11 +60,6 @@ public abstract class Element<T extends Element> extends RootElement<T> {
         return result;
     }
 
-    public <T1> T1 getAttribute(Attribute attr, T1 defaultValue) {
-        T1 value = this.<T1>getAttribute(attr);
-        return value == null ? defaultValue : value;
-    }
-
     @Override
     public <T1> T1 getStyleAttribute(Attribute attribute) {
         T1 result = super.<T1>getStyleAttribute(attribute);
@@ -84,4 +79,6 @@ public abstract class Element<T extends Element> extends RootElement<T> {
         T1 value = this.<T1>getStyleAttribute(attr);
         return value == null ? defaultValue : value;
     }
+
+    public abstract Renderer createRenderer();
 }
