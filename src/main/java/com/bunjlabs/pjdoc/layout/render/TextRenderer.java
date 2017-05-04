@@ -38,6 +38,8 @@ public class TextRenderer extends Renderer<Text> {
         Color textColor = getAttribute(Attribute.COLOR, Color.BLACK);
         String text = modelElement.getText();
 
+        text = text.trim().replace("\n", "").replace("\r", "");
+
         float width = boundingBox.getWidth();
         float startX = boundingBox.getLowerLeftX();
         float startY = boundingBox.getUpperRightY();

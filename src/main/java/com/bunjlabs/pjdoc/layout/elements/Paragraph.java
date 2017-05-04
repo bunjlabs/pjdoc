@@ -2,6 +2,7 @@ package com.bunjlabs.pjdoc.layout.elements;
 
 import com.bunjlabs.pjdoc.layout.render.ParagraphRenderer;
 import com.bunjlabs.pjdoc.layout.render.Renderer;
+import java.util.Collection;
 
 /**
  *
@@ -32,9 +33,9 @@ public final class Paragraph extends BlockElement<Paragraph> {
         return this;
     }
 
-    public <T1 extends Element> Paragraph addAll(java.util.List<T1> elements) {
-        elements.forEach((e) -> e.parentElement = this);
+    public Paragraph addAll(Collection<Element> elements) {
         childElements.addAll(elements);
+        elements.forEach((e) -> e.parentElement = this);
         return this;
     }
 

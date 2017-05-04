@@ -20,32 +20,37 @@ public class BlockRenderer<E extends BlockElement> extends Renderer<E> {
     public LayoutResult render(RenderContext renderContext, LayoutContext layoutContext) {
         PDRectangle parentBoundingBox = layoutContext.getBoundingBox();
 
-        applyMargins(parentBoundingBox);
-        // drawBackground(renderContext, parentBoundingBox);
-        // drawBorder(renderContext, parentBoundingBox);
-
         PDRectangle boundingBox = RectangleUtils.clone(parentBoundingBox);
+        applyMargins(boundingBox);
+
+        drawBackground(renderContext, boundingBox);
+        drawBorder(renderContext, boundingBox);
+
         applyPaddings(boundingBox);
 
-        for (Iterator<Renderer> it = childRenderers.iterator(); it.hasNext();) {
-            Renderer renderer = it.next();
-            LayoutResult layoutResult = renderer.render(renderContext, new LayoutContext(parentBoundingBox, boundingBox));
+        renderChildren(renderContext, parentBoundingBox, boundingBox);
 
-            if (layoutResult.getType() != LayoutResult.FULL) {
-                break;
-            }
+        float heigthDiff = parentBoundingBox.getHeight() - boundingBox.getHeight();
 
-            it.remove();
-        }
-
-        float heigthDelta = parentBoundingBox.getHeight() - boundingBox.getHeight();
-
-        parentBoundingBox.setUpperRightY(parentBoundingBox.getUpperRightY() - heigthDelta);
+        parentBoundingBox.setUpperRightY(parentBoundingBox.getUpperRightY() - heigthDiff);
 
         if (childRenderers.isEmpty()) {
             return new LayoutResult(LayoutResult.FULL);
         } else {
             return new LayoutResult(LayoutResult.PARTIAL);
+        }
+    }
+
+    public void renderChildren(RenderContext renderContext, PDRectangle parentBoundingBox, PDRectangle boundingBox) {
+        for (Iterator<Renderer> it = childRenderers.iterator(); it.hasNext();) {
+            Renderer renderer = it.next();
+            LayoutResult layoutResult = renderer.render(renderContext, new LayoutContext(parentBoundingBox, boundingBox));
+
+            if (layoutResult.getType() == LayoutResult.PARTIAL) {
+                break;
+            }
+
+            it.remove();
         }
     }
 
@@ -73,5 +78,11 @@ public class BlockRenderer<E extends BlockElement> extends Renderer<E> {
 
         boundingBox.setLowerLeftY(boundingBox.getLowerLeftY() + paddingBottom);
         boundingBox.setUpperRightY(boundingBox.getUpperRightY() - paddingTop);
+    }
+
+    protected void drawBackground(RenderContext renderContext, PDRectangle parentBoundingBox) {
+    }
+
+    protected void drawBorder(RenderContext renderContext, PDRectangle parentBoundingBox) {
     }
 }

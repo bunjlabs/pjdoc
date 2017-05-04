@@ -1,5 +1,6 @@
 package com.bunjlabs.pjdoc.utils;
 
+import java.util.Scanner;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
@@ -15,5 +16,37 @@ public class RectangleUtils {
                 other.getWidth(),
                 other.getHeight()
         );
+    }
+
+    public static PDRectangle pageSize(String value) {
+        switch (value.toUpperCase()) {
+            case "A0":
+                return PDRectangle.A0;
+            case "A1":
+                return PDRectangle.A1;
+            case "A2":
+                return PDRectangle.A2;
+            case "A3":
+                return PDRectangle.A3;
+            case "A4":
+                return PDRectangle.A4;
+            case "A5":
+                return PDRectangle.A5;
+            case "A6":
+                return PDRectangle.A6;
+            case "LEGAL":
+                return PDRectangle.LEGAL;
+            case "LETTER":
+                return PDRectangle.LETTER;
+        }
+
+        Scanner s = new Scanner(value);
+
+        PDRectangle page = new PDRectangle(UnitUtils.unit(s.next()), UnitUtils.unit(s.next()));
+
+        s.close();
+
+        return page;
+
     }
 }

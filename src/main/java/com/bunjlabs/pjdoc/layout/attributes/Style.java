@@ -29,6 +29,21 @@ public class Style extends ElementAttributeContainer<Style> {
         return this;
     }
 
+    public Style setTextAlign(TextAlign textAlign) {
+        setAttribute(Attribute.TEXT_ALIGN, textAlign);
+        return this;
+    }
+
+    public Style setWidth(float width) {
+        setAttribute(Attribute.WIDTH, width);
+        return this;
+    }
+
+    public Style setHeight(float height) {
+        setAttribute(Attribute.HEIGHT, height);
+        return this;
+    }
+
     public Style setMarginTop(float marginTop) {
         setAttribute(Attribute.MARGIN_TOP, marginTop);
         return this;

@@ -1,6 +1,7 @@
 package com.bunjlabs.pjdoc.layout.elements;
 
 import com.bunjlabs.pjdoc.utils.UnitUtils;
+import java.util.Collection;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
@@ -9,7 +10,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  */
 public class Document extends RootElement<Document> {
 
-    private final PDRectangle pageSize;
+    private PDRectangle pageSize;
     private float marginTop = UnitUtils.mm(20);
     private float marginRight = UnitUtils.mm(20);
     private float marginBottom = UnitUtils.mm(20);
@@ -26,6 +27,12 @@ public class Document extends RootElement<Document> {
     public Document add(BlockElement element) {
         childElements.add(element);
         element.parentElement = this;
+        return this;
+    }
+
+    public Document addAll(Collection<BlockElement> elements) {
+        childElements.addAll(elements);
+        elements.forEach((e) -> e.parentElement = this);
         return this;
     }
 
@@ -75,6 +82,10 @@ public class Document extends RootElement<Document> {
                 this.pageSize.getWidth(),
                 this.pageSize.getHeight()
         );
+    }
+
+    public void setPageSize(PDRectangle pageSize) {
+        this.pageSize = pageSize;
     }
 
     public PDRectangle getEffectiveArea() {

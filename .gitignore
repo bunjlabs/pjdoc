@@ -2,4 +2,6 @@ example/
 fonts/
 target/
 *.pdf
+example-template.xml
+example.xml
 

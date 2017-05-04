@@ -9,6 +9,9 @@ public enum Attribute {
     FONT,
     FONT_SIZE,
     LEADING,
+    TEXT_ALIGN,
+    WIDTH,
+    HEIGHT,
     MARGIN_TOP,
     MARGIN_RIGHT,
     MARGIN_BOTTOM,
@@ -27,6 +30,7 @@ public enum Attribute {
         INHERITED_PROPERTIES[FONT.ordinal()] = true;
         INHERITED_PROPERTIES[FONT_SIZE.ordinal()] = true;
         INHERITED_PROPERTIES[LEADING.ordinal()] = true;
+        INHERITED_PROPERTIES[TEXT_ALIGN.ordinal()] = true;
     }
 
     public boolean isInherited() {

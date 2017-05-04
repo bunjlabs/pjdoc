@@ -10,16 +10,25 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 public class LayoutContext {
 
     private final PDRectangle mediaBox;
-    private PDRectangle boundingBox;
+    private final PDRectangle boundingBox;
+    private final ParagraphState paragraphState;
 
     public LayoutContext(PDRectangle mediaBox) {
         this.mediaBox = RectangleUtils.clone(mediaBox);
         this.boundingBox = RectangleUtils.clone(mediaBox);
+        this.paragraphState = new ParagraphState();
     }
 
     public LayoutContext(PDRectangle mediaBox, PDRectangle boundingBox) {
         this.mediaBox = RectangleUtils.clone(mediaBox);
         this.boundingBox = boundingBox;
+        this.paragraphState = new ParagraphState();
+    }
+
+    public LayoutContext(PDRectangle mediaBox, PDRectangle boundingBox, ParagraphState paragraphState) {
+        this.mediaBox = RectangleUtils.clone(mediaBox);
+        this.boundingBox = boundingBox;
+        this.paragraphState = paragraphState;
     }
 
     public PDRectangle getMediaBox() {
@@ -28,6 +37,10 @@ public class LayoutContext {
 
     public PDRectangle getBoundingBox() {
         return boundingBox;
+    }
+
+    public ParagraphState getParagraphState() {
+        return paragraphState;
     }
 
 }

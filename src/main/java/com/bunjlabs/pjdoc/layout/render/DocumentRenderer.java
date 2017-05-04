@@ -36,7 +36,7 @@ public class DocumentRenderer {
         addPage();
 
         LayoutContext layoutContext = new LayoutContext(document.getEffectiveArea());
-        RenderContext renderContext = new RenderContext(pagesContentStream.getLast());
+        RenderContext renderContext = new RenderContext(pDDocument, pagesContentStream.getLast());
 
         for (int childInx = 0; childInx < childRenderers.size(); childInx++) {
             Renderer renderer = childRenderers.get(childInx);
@@ -47,7 +47,7 @@ public class DocumentRenderer {
                 addPage();
 
                 layoutContext = new LayoutContext(document.getEffectiveArea());
-                renderContext = new RenderContext(pagesContentStream.getLast());
+                renderContext = new RenderContext(pDDocument, pagesContentStream.getLast());
 
                 childInx--;
             }
