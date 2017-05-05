@@ -12,7 +12,7 @@ import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
  */
 public abstract class Barcode extends Image {
 
-    private final int dpi = 600;
+    private final int dpi = 1200;
 
     protected final void createBarcodeImage(AbstractBarcodeBean barcodeBean, String data) throws IOException {
         BitmapCanvasProvider provider = new BitmapCanvasProvider(dpi, BufferedImage.TYPE_BYTE_GRAY, true, 0);

@@ -4,8 +4,12 @@ import com.bunjlabs.pjdoc.layout.elements.Document;
 import com.vladsch.flexmark.ast.Node;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.options.MutableDataSet;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  *
@@ -20,10 +24,18 @@ public class MarkdownWorker {
         parser = Parser.builder(options).build();
     }
 
-    public void work(Document document, Reader reader) throws IOException {
-        Node root = parser.parseReader(reader);
+    public Document work(File f) throws IOException, FileNotFoundException {
+        return work(new FileInputStream(f));
+    }
+
+    public Document work(InputStream is) throws IOException {
+        Document document = new Document();
+
+        Node root = parser.parseReader(new InputStreamReader(is));
 
         MarkdownRenderer markdownRenderer = new MarkdownRenderer(document);
         markdownRenderer.render(root);
+
+        return document;
     }
 }

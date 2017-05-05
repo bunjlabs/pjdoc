@@ -1,5 +1,6 @@
 package com.bunjlabs.pjdoc.layout.render;
 
+import com.bunjlabs.pjdoc.layout.LayoutArea;
 import com.bunjlabs.pjdoc.layout.attributes.Attribute;
 import com.bunjlabs.pjdoc.layout.attributes.IAttributeContainer;
 import com.bunjlabs.pjdoc.layout.elements.Element;
@@ -13,7 +14,12 @@ import java.util.List;
 public abstract class Renderer<E extends Element> implements IAttributeContainer {
 
     protected final List<Renderer> childRenderers = new LinkedList<>();
-    protected final E modelElement;
+    protected E modelElement;
+    protected LayoutArea occupiedArea;
+
+    public Renderer() {
+        this.modelElement = null;
+    }
 
     protected Renderer(E modelElement) {
         this.modelElement = modelElement;
@@ -23,7 +29,11 @@ public abstract class Renderer<E extends Element> implements IAttributeContainer
         childRenderers.add(renderer);
     }
 
-    public abstract LayoutResult render(RenderContext renderContext, LayoutContext layoutContext);
+    public abstract LayoutResult layout(LayoutContext layoutContext);
+
+    public abstract void render(RenderContext renderContext);
+
+    public abstract Renderer getNextRenderer();
 
     @Override
     public void deleteAttribute(Attribute attr) {

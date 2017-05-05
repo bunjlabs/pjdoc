@@ -4,13 +4,24 @@ import com.bunjlabs.pjdoc.layout.elements.BlockElement;
 import com.bunjlabs.pjdoc.layout.elements.Div;
 import com.bunjlabs.pjdoc.layout.elements.Element;
 import com.bunjlabs.pjdoc.layout.elements.Flex;
+import com.bunjlabs.pjdoc.layout.elements.Image;
 import com.bunjlabs.pjdoc.layout.elements.Paragraph;
+import com.bunjlabs.pjdoc.layout.elements.barcode.Barcode;
+import com.bunjlabs.pjdoc.layout.elements.barcode.Code128;
+import com.bunjlabs.pjdoc.layout.elements.barcode.Code39;
+import com.bunjlabs.pjdoc.layout.elements.barcode.EAN13;
+import com.bunjlabs.pjdoc.layout.elements.barcode.PDF417;
 import com.bunjlabs.pjdoc.xml.XmlParseException;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import org.w3c.dom.Node;
 
 /**
@@ -31,6 +42,8 @@ public class ContentParser {
         map.put("div", (c, n) -> ContentParser.this.parseDiv(c, n));
         map.put("flex", (c, n) -> ContentParser.this.parseFlex(c, n));
         map.put("p", (c, n) -> ContentParser.this.parseParagraph(c, n));
+        map.put("image", (c, n) -> ContentParser.this.parseImage(c, n));
+        map.put("barcode", (c, n) -> ContentParser.this.parseBarcode(c, n));
         map.put("place-content", (c, n) -> ContentParser.this.parsePlaceContent(c, n));
 
         return map;
@@ -82,6 +95,64 @@ public class ContentParser {
         p.add(text != null ? text : "");
 
         return Arrays.asList(p);
+    }
+
+    private List<Element> parseImage(ContentParserContext context, Node node) throws XmlParseException {
+        Node srcNode = node.getAttributes().getNamedItem("src");
+
+        if (srcNode == null) {
+            return Collections.EMPTY_LIST;
+        }
+
+        Image image;
+
+        try {
+            image = new Image(ImageIO.read(new File(srcNode.getNodeValue())));
+        } catch (IOException ex) {
+            throw new XmlParseException("Unable to insert image", ex);
+        }
+
+        return Arrays.asList(image);
+    }
+
+    private List<Element> parseBarcode(ContentParserContext context, Node node) throws XmlParseException {
+        Barcode barcode = null;
+
+        Node typeNode = node.getAttributes().getNamedItem("type");
+        Node valueNode = node.getAttributes().getNamedItem("value");
+
+        if (typeNode != null && valueNode != null) {
+            String type = typeNode.getNodeValue();
+            String value = valueNode.getNodeValue();
+
+            try {
+                switch (type.toLowerCase()) {
+                    case "code128": {
+                        barcode = new Code128(value);
+                        break;
+                    }
+                    case "code39": {
+                        barcode = new Code39(value);
+                        break;
+                    }
+                    case "pdf417": {
+                        barcode = new PDF417(value);
+                        break;
+                    }
+                    default:
+                    case "ean13": {
+                        barcode = new EAN13(value);
+                        break;
+                    }
+                }
+            } catch (IOException ex) {
+                throw new XmlParseException("Unable to create barcode instance", ex);
+            }
+        }
+
+        ParserUtils.parseStyles(barcode, node.getAttributes());
+
+        return barcode == null ? Collections.EMPTY_LIST : Arrays.asList(barcode);
     }
 
     private List<Element> parsePlaceContent(ContentParserContext context, Node node) throws XmlParseException {

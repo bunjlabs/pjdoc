@@ -1,5 +1,6 @@
 package com.bunjlabs.pjdoc.xml.parser;
 
+import com.bunjlabs.pjdoc.layout.attributes.Font;
 import com.bunjlabs.pjdoc.layout.attributes.Style;
 import com.bunjlabs.pjdoc.layout.attributes.TextAlign;
 import com.bunjlabs.pjdoc.layout.elements.Document;
@@ -30,12 +31,16 @@ public class ParserUtils {
             }
 
             switch (attribute.getNodeName()) {
+                case "background-color": {
+                    style.setBackgroundColor(Color.decode(attribute.getNodeValue()));
+                    break;
+                }
                 case "color": {
                     style.setColor(Color.decode(attribute.getNodeValue()));
                     break;
                 }
                 case "font": {
-                    //style.setFont(PDType0Font.load(xmlWorker.getPDDocument(), new File(attribute.getNodeValue())));
+                    style.setFont(new Font(attribute.getNodeValue()));
                     break;
                 }
                 case "font-size": {
@@ -43,7 +48,11 @@ public class ParserUtils {
                     break;
                 }
                 case "text-align": {
-                    style.setTextAlign(TextAlign.valueOf(attribute.getNodeName().toUpperCase()));
+                    style.setTextAlign(TextAlign.valueOf(attribute.getNodeValue().toUpperCase()));
+                    break;
+                }
+                case "leading": {
+                    style.setLeading(Float.parseFloat(attribute.getNodeValue()));
                     break;
                 }
                 case "width": {

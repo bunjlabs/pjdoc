@@ -1,5 +1,7 @@
 package com.bunjlabs.pjdoc.layout.render;
 
+import com.bunjlabs.pjdoc.layout.LayoutArea;
+import com.bunjlabs.pjdoc.layout.Rectangle;
 import com.bunjlabs.pjdoc.layout.elements.Document;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,39 +20,54 @@ public class DocumentRenderer {
     private final LinkedList<PDPage> pages = new LinkedList<>();
     private final LinkedList<PDPageContentStream> pagesContentStream = new LinkedList<>();
 
-    private final List<Renderer> childRenderers;
+    private final List<Renderer> childRenderers = new LinkedList<>();
 
     private final PDDocument pDDocument;
     private final Document document;
+
+    private LayoutArea currentPageArea;
 
     public DocumentRenderer(PDDocument pDDocument, Document document) {
         this.pDDocument = pDDocument;
         this.document = document;
 
-        this.childRenderers = new ArrayList<>(this.document.getChildren().size());
+        this.currentPageArea = new LayoutArea(0, new Rectangle(document.getEffectiveArea()));
 
-        this.document.getChildren().forEach((e) -> childRenderers.add(RendererFactory.createRendererSubtree(e)));
+        this.document.getChildren().forEach((e) -> addChild(RendererFactory.createRendererSubtree(e)));
+    }
+
+    private void addChild(Renderer renderer) {
+        childRenderers.add(renderer);
+
+        LayoutContext layoutContext = new LayoutContext(currentPageArea.clone());
+
+        List<Renderer> resultRenderers = new LinkedList<>();
+
+        LayoutResult layoutResult;
+        while ((layoutResult = renderer.layout(layoutContext)).getType() != LayoutResult.FULL) {
+            if (layoutResult.getType() == LayoutResult.PARTIAL) {
+
+                resultRenderers.add(layoutResult.getSplitRenderers()[0]);
+
+                updateCurrentArea();
+
+                layoutContext = new LayoutContext(currentPageArea.clone());
+                renderer = layoutResult.getSplitRenderers()[1];
+            }
+        }
+
+        childRenderers.addAll(resultRenderers);
     }
 
     public void render() throws IOException {
-        addPage();
+        RenderContext renderContext = new RenderContext(pDDocument, pagesContentStream);
 
-        LayoutContext layoutContext = new LayoutContext(document.getEffectiveArea());
-        RenderContext renderContext = new RenderContext(pDDocument, pagesContentStream.getLast());
+        addPages();
 
         for (int childInx = 0; childInx < childRenderers.size(); childInx++) {
             Renderer renderer = childRenderers.get(childInx);
 
-            LayoutResult layoutResult = renderer.render(renderContext, layoutContext);
-
-            if (layoutResult.getType() == LayoutResult.PARTIAL) {
-                addPage();
-
-                layoutContext = new LayoutContext(document.getEffectiveArea());
-                renderContext = new RenderContext(pDDocument, pagesContentStream.getLast());
-
-                childInx--;
-            }
+            renderer.render(renderContext);
         }
 
         for (PDPageContentStream contentStream : pagesContentStream) {
@@ -62,12 +79,17 @@ public class DocumentRenderer {
         }
     }
 
-    private void addPage() throws IOException {
-        PDPage page = new PDPage(document.getPageSize());
+    private void updateCurrentArea() {
+        currentPageArea = new LayoutArea(currentPageArea.getPageNumber() + 1, new Rectangle(document.getEffectiveArea()));
+    }
 
-        PDPageContentStream pageContentStream = new PDPageContentStream(pDDocument, page, PDPageContentStream.AppendMode.APPEND, true);
+    private void addPages() throws IOException {
+        for (int i = 0; i <= currentPageArea.getPageNumber(); i++) {
+            PDPage page = new PDPage(document.getPageSize());
+            PDPageContentStream pageContentStream = new PDPageContentStream(pDDocument, page, PDPageContentStream.AppendMode.APPEND, true);
 
-        pages.add(page);
-        pagesContentStream.add(pageContentStream);
+            pages.add(page);
+            pagesContentStream.add(pageContentStream);
+        }
     }
 }

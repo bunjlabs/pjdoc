@@ -1,7 +1,7 @@
 package com.bunjlabs.pjdoc.layout.render;
 
-import com.bunjlabs.pjdoc.utils.RectangleUtils;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import com.bunjlabs.pjdoc.layout.LayoutArea;
+import com.bunjlabs.pjdoc.layout.Rectangle;
 
 /**
  *
@@ -9,38 +9,24 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  */
 public class LayoutContext {
 
-    private final PDRectangle mediaBox;
-    private final PDRectangle boundingBox;
-    private final ParagraphState paragraphState;
+    private final LayoutArea mediaArea;
+    private Rectangle boundingBox;
 
-    public LayoutContext(PDRectangle mediaBox) {
-        this.mediaBox = RectangleUtils.clone(mediaBox);
-        this.boundingBox = RectangleUtils.clone(mediaBox);
-        this.paragraphState = new ParagraphState();
+    public LayoutContext(LayoutArea mediaArea) {
+        this.mediaArea = mediaArea;
+        this.boundingBox = mediaArea.getBoundingBox().clone();
     }
 
-    public LayoutContext(PDRectangle mediaBox, PDRectangle boundingBox) {
-        this.mediaBox = RectangleUtils.clone(mediaBox);
-        this.boundingBox = boundingBox;
-        this.paragraphState = new ParagraphState();
+    public LayoutContext(LayoutArea mediaArea, Rectangle mediaBox) {
+        this.mediaArea = mediaArea;
+        this.boundingBox = mediaBox.clone();
     }
 
-    public LayoutContext(PDRectangle mediaBox, PDRectangle boundingBox, ParagraphState paragraphState) {
-        this.mediaBox = RectangleUtils.clone(mediaBox);
-        this.boundingBox = boundingBox;
-        this.paragraphState = paragraphState;
+    public LayoutArea getMediaArea() {
+        return mediaArea;
     }
 
-    public PDRectangle getMediaBox() {
-        return mediaBox;
-    }
-
-    public PDRectangle getBoundingBox() {
+    public Rectangle getBoundingBox() {
         return boundingBox;
     }
-
-    public ParagraphState getParagraphState() {
-        return paragraphState;
-    }
-
 }

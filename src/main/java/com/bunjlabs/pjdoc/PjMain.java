@@ -1,5 +1,6 @@
 package com.bunjlabs.pjdoc;
 
+import com.bunjlabs.pjdoc.layout.attributes.Font;
 import com.bunjlabs.pjdoc.layout.elements.Document;
 import com.bunjlabs.pjdoc.layout.attributes.Style;
 import com.bunjlabs.pjdoc.utils.UnitUtils;
@@ -10,12 +11,11 @@ import com.bunjlabs.pjdoc.layout.elements.Paragraph;
 import com.bunjlabs.pjdoc.layout.elements.barcode.Code128;
 import com.bunjlabs.pjdoc.layout.render.DocumentRenderer;
 import com.bunjlabs.pjdoc.xml.XmlWorker;
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
 /**
  *
@@ -25,8 +25,7 @@ public class PjMain {
 
     public static void test01(PDDocument pDDocument) throws IOException {
         Document document = new Document(PDRectangle.A4);
-        PDFont font = PDType0Font.load(pDDocument, new File("./fonts/roboto/Roboto-Thin.ttf"));
-        document.addStyle(new Style().setFont(font));
+        document.addStyle(new Style().setFont(new Font("./fonts/roboto/Roboto-Thin.ttf")));
 
         for (int i = 0; i < 32; i++) {
             Paragraph paragraph = new Paragraph();
@@ -45,9 +44,8 @@ public class PjMain {
     public static void test02(PDDocument pDDocument) throws IOException {
         Document document = new Document(PDRectangle.A4);
 
-        PDFont font = PDType0Font.load(pDDocument, new File("./fonts/roboto/Roboto-Thin.ttf"));
         Div div = new Div();
-        div.addStyle(new Style().setFont(font));
+        div.addStyle(new Style().setFont(new Font("./fonts/roboto/Roboto-Thin.ttf")));
 
         for (int i = 0; i < 10; i++) {
             Paragraph paragraph = new Paragraph();
@@ -65,9 +63,8 @@ public class PjMain {
     public static void test03(PDDocument pDDocument) throws IOException {
         Document document = new Document(PDRectangle.A4);
 
-        PDFont font = PDType0Font.load(pDDocument, new File("./fonts/roboto/Roboto-Thin.ttf"));
         Div div = new Div();
-        div.addStyle(new Style().setFont(font));
+        div.addStyle(new Style().setFont(new Font("./fonts/roboto/Roboto-Thin.ttf")));
 
         Paragraph paragraph1 = new Paragraph();
         paragraph1.add(UnitUtils.pangram());
@@ -90,9 +87,8 @@ public class PjMain {
     public static void test04(PDDocument pDDocument) throws IOException {
         Document document = new Document(PDRectangle.A4);
 
-        PDFont font = PDType0Font.load(pDDocument, new File("./fonts/roboto/Roboto-Thin.ttf"));
         Div div = new Div();
-        div.addStyle(new Style().setFont(font));
+        div.addStyle(new Style().setFont(new Font("./fonts/roboto/Roboto-Thin.ttf")));
 
         Paragraph paragraph = new Paragraph();
         paragraph.add("Lorem ");
@@ -111,8 +107,7 @@ public class PjMain {
     public static void test05(PDDocument pDDocument) throws IOException {
         Document document = new Document(PDRectangle.A4);
 
-        PDFont font = PDType0Font.load(pDDocument, new File("./fonts/roboto/Roboto-Thin.ttf"));
-        document.addStyle(new Style().setFont(font));
+        document.addStyle(new Style().setFont(new Font("./fonts/roboto/Roboto-Thin.ttf")));
 
         Flex flex = new Flex();
         flex.addStyle(new Style().setMarginBottom(UnitUtils.mm(20)));
@@ -161,12 +156,44 @@ public class PjMain {
         documentRenderer.render();
     }
 
+    public static void test08(PDDocument pDDocument) throws Exception {
+        Document document = new Document(PDRectangle.A4);
+
+        Div wrap = new Div();
+        wrap.addStyle(new Style()
+                .setPadding(UnitUtils.mm(5))
+                .setBackgroundColor(Color.GRAY)
+        );
+
+        Div inner = new Div();
+        inner.addStyle(new Style()
+                .setMargin(UnitUtils.mm(0), UnitUtils.mm(20))
+                .setPadding(UnitUtils.mm(30), UnitUtils.mm(5))
+                .setBackgroundColor(Color.BLACK)
+        );
+
+        Div inner2 = new Div();
+        inner2.addStyle(new Style()
+                .setMargin(UnitUtils.mm(5), UnitUtils.mm(10))
+                .setPadding(UnitUtils.mm(30), UnitUtils.mm(5))
+                .setBackgroundColor(Color.BLACK)
+        );
+
+        wrap.add(inner);
+        wrap.add(inner2);
+
+        document.add(wrap);
+
+        DocumentRenderer documentRenderer = new DocumentRenderer(pDDocument, document);
+        documentRenderer.render();
+    }
+
     public static void main(String[] args) throws Exception {
         PDDocument pDDocument = new PDDocument();
         pDDocument.getDocumentInformation().setProducer("pjDoc");
         pDDocument.setVersion(1.5f);
 
-        test07(pDDocument);
+        test08(pDDocument);
 
         pDDocument.save("./example.pdf");
         pDDocument.close();

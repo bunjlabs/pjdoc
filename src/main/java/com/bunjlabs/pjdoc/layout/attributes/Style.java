@@ -9,7 +9,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
  */
 public class Style extends ElementAttributeContainer<Style> {
 
-    public Style setFont(PDFont font) {
+    public Style setFont(Font font) {
         setAttribute(Attribute.FONT, font);
         return this;
     }
@@ -21,6 +21,11 @@ public class Style extends ElementAttributeContainer<Style> {
 
     public Style setColor(Color color) {
         setAttribute(Attribute.COLOR, color);
+        return this;
+    }
+
+    public Style setBackgroundColor(Color color) {
+        setAttribute(Attribute.BACKGROUND_COLOR, color);
         return this;
     }
 
@@ -72,6 +77,14 @@ public class Style extends ElementAttributeContainer<Style> {
         return this;
     }
 
+    public Style setMargin(float marginTopBottom, float marginLeftRight) {
+        setAttribute(Attribute.MARGIN_TOP, marginTopBottom);
+        setAttribute(Attribute.MARGIN_RIGHT, marginLeftRight);
+        setAttribute(Attribute.MARGIN_BOTTOM, marginTopBottom);
+        setAttribute(Attribute.MARGIN_LEFT, marginLeftRight);
+        return this;
+    }
+
     public Style setMargin(float margin) {
         setAttribute(Attribute.MARGIN_TOP, margin);
         setAttribute(Attribute.MARGIN_RIGHT, margin);
@@ -105,6 +118,14 @@ public class Style extends ElementAttributeContainer<Style> {
         setAttribute(Attribute.PADDING_RIGHT, paddingRight);
         setAttribute(Attribute.PADDING_BOTTOM, paddingBottom);
         setAttribute(Attribute.PADDING_LEFT, paddingLeft);
+        return this;
+    }
+
+    public Style setPadding(float paddingTopBottom, float paddingLeftRight) {
+        setAttribute(Attribute.PADDING_TOP, paddingTopBottom);
+        setAttribute(Attribute.PADDING_RIGHT, paddingLeftRight);
+        setAttribute(Attribute.PADDING_BOTTOM, paddingTopBottom);
+        setAttribute(Attribute.PADDING_LEFT, paddingLeftRight);
         return this;
     }
 

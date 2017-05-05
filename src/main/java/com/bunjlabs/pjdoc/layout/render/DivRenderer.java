@@ -12,4 +12,9 @@ public class DivRenderer extends BlockRenderer<Div> {
         super(modelElement);
     }
 
+    @Override
+    public Renderer getNextRenderer() {
+        return new DivRenderer(modelElement);
+    }
+
 }

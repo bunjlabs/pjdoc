@@ -6,18 +6,18 @@ import com.bunjlabs.pjdoc.layout.attributes.TextAlign;
  *
  * @author Artem Shurygin <artem.shurygin@bunjlabs.com>
  */
-class ParagraphState {
+class LineState {
 
     private float lastLineWidth = 0f;
     private final TextAlign textAlign;
     private float startX;
     private float startY;
 
-    public ParagraphState() {
+    public LineState() {
         this.textAlign = TextAlign.LEFT;
     }
 
-    public ParagraphState(TextAlign textAlign) {
+    public LineState(TextAlign textAlign) {
         this.textAlign = textAlign;
     }
 

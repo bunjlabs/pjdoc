@@ -23,6 +23,7 @@ public class TemplateParser {
         }
 
         ParserUtils.parseDocumentAttributes(context.getDocument(), root.getAttributes());
+        ParserUtils.parseStyles(context.getDocument(), root.getAttributes());
 
         List<Element> templateContent = contentParser.parseContent(
                 new ContentParserContext("@template-" + context.getTemplateId(), context.getContents()), root);

@@ -1,17 +1,16 @@
 package com.bunjlabs.pjdoc.layout.render;
 
+import com.bunjlabs.pjdoc.layout.Rectangle;
 import com.bunjlabs.pjdoc.layout.attributes.Attribute;
+import com.bunjlabs.pjdoc.layout.attributes.Font;
 import com.bunjlabs.pjdoc.layout.elements.Text;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 
 /**
  *
@@ -28,11 +27,19 @@ public class TextRenderer extends Renderer<Text> {
     }
 
     @Override
-    public LayoutResult render(RenderContext renderContext, LayoutContext layoutContext) {
-        PDRectangle boundingBox = layoutContext.getBoundingBox();
-        PDPageContentStream stream = renderContext.getPageContentStream();
+    public LayoutResult layout(LayoutContext layoutContext) {
+        Rectangle boundingBox = layoutContext.getBoundingBox();
 
-        PDFont font = getAttribute(Attribute.FONT, PDType1Font.HELVETICA);
+        Font pfont = getAttribute(Attribute.FONT);
+
+        PDFont font;
+        if (pfont == null) {
+            font = PDType1Font.HELVETICA;
+        } else {
+            //    font = PDType0Font.load(renderContext.getPDDocument(), new File(pfont.getName()));
+
+        }
+
         float fontSize = getAttribute(Attribute.FONT_SIZE, 14f);
         float leading = getAttribute(Attribute.LEADING, 1.5f) * fontSize;
         Color textColor = getAttribute(Attribute.COLOR, Color.BLACK);
@@ -41,13 +48,13 @@ public class TextRenderer extends Renderer<Text> {
         text = text.trim().replace("\n", "").replace("\r", "");
 
         float width = boundingBox.getWidth();
-        float startX = boundingBox.getLowerLeftX();
-        float startY = boundingBox.getUpperRightY();
+        float startX = boundingBox.getLeft();
+        float startY = boundingBox.getTop();
 
         float firstLineShift = 0;
 
         if (!text.isEmpty() && lines.isEmpty()) {
-            lines.addAll(splitText(font, fontSize, width, text));
+            //lines.addAll(splitText(font, fontSize, width, text));
         }
 
         int linesToDraw = lines.size() - drawnLines;
@@ -62,6 +69,7 @@ public class TextRenderer extends Renderer<Text> {
 
         textHeigth = linesToDraw * leading;
 
+        /*
         try {
             stream.beginText();
             stream.setRenderingMode(RenderingMode.FILL);
@@ -79,16 +87,15 @@ public class TextRenderer extends Renderer<Text> {
             stream.restoreGraphicsState();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
+        }*/
         drawnLines += linesToDraw;
 
-        boundingBox.setUpperRightY(boundingBox.getUpperRightY() - textHeigth);
+        boundingBox.addHeight(textHeigth);
 
         if (isPartial) {
-            return new LayoutResult(LayoutResult.PARTIAL);
+            return new LayoutResult(LayoutResult.PARTIAL, null);
         } else {
-            return new LayoutResult(LayoutResult.FULL);
+            return new LayoutResult(LayoutResult.FULL, null);
         }
     }
 
@@ -128,6 +135,15 @@ public class TextRenderer extends Renderer<Text> {
         }
 
         return lines;
+    }
+
+    @Override
+    public void render(RenderContext renderContext) {
+    }
+
+    @Override
+    public Renderer getNextRenderer() {
+        return new TextRenderer(modelElement);
     }
 
 }
