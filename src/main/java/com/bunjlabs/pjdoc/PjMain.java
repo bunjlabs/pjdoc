@@ -8,6 +8,7 @@ import com.bunjlabs.pjdoc.layout.elements.Div;
 import com.bunjlabs.pjdoc.layout.elements.Flex;
 import com.bunjlabs.pjdoc.layout.elements.Image;
 import com.bunjlabs.pjdoc.layout.elements.Paragraph;
+import com.bunjlabs.pjdoc.layout.elements.Text;
 import com.bunjlabs.pjdoc.layout.elements.barcode.Code128;
 import com.bunjlabs.pjdoc.layout.render.DocumentRenderer;
 import com.bunjlabs.pjdoc.xml.XmlWorker;
@@ -188,12 +189,46 @@ public class PjMain {
         documentRenderer.render();
     }
 
+    public static void test09(PDDocument pDDocument) throws Exception {
+        Document document = new Document(PDRectangle.A4);
+
+        Div wrap = new Div();
+        wrap.addStyle(new Style()
+                .setBackgroundColor(Color.GRAY)
+                .setColor(Color.WHITE)
+        );
+
+        Paragraph p = new Paragraph();
+        p.add(UnitUtils.pangram());
+        wrap.add(p);
+
+        document.add(wrap);
+
+        DocumentRenderer documentRenderer = new DocumentRenderer(pDDocument, document);
+        documentRenderer.render();
+    }
+
+    public static void test10(PDDocument pDDocument) throws Exception {
+        Document document = new Document(PDRectangle.A4);
+
+        Flex f = new Flex();
+
+        f.add(new Paragraph("Hello world"));
+        f.add(new Paragraph("Hello world"));
+        f.add(new Paragraph("Hello world").addStyle(new Style().setMarginLeft(UnitUtils.mm(30))));
+
+        document.add(f);
+
+        DocumentRenderer documentRenderer = new DocumentRenderer(pDDocument, document);
+        documentRenderer.render();
+    }
+
     public static void main(String[] args) throws Exception {
         PDDocument pDDocument = new PDDocument();
         pDDocument.getDocumentInformation().setProducer("pjDoc");
         pDDocument.setVersion(1.5f);
 
-        test08(pDDocument);
+        test10(pDDocument);
 
         pDDocument.save("./example.pdf");
         pDDocument.close();

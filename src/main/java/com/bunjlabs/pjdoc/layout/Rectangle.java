@@ -50,6 +50,16 @@ public class Rectangle {
         return y;
     }
 
+    public Rectangle moveX(float move) {
+        x += move;
+        return this;
+    }
+
+    public Rectangle moveY(float move) {
+        y += move;
+        return this;
+    }
+
     public float getLeft() {
         return x;
     }

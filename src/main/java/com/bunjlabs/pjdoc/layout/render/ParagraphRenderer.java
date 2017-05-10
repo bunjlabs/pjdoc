@@ -1,8 +1,11 @@
 package com.bunjlabs.pjdoc.layout.render;
 
+import com.bunjlabs.pjdoc.layout.LayoutArea;
 import com.bunjlabs.pjdoc.layout.Rectangle;
 import com.bunjlabs.pjdoc.layout.elements.Paragraph;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -10,44 +13,52 @@ import java.util.Iterator;
  */
 public class ParagraphRenderer extends BlockRenderer<Paragraph> {
 
-    private final LineRenderer lineRenderer;
+    private List<LineRenderer> lines = new LinkedList<>();
 
     public ParagraphRenderer(Paragraph modelElement) {
         super(modelElement);
-
-        lineRenderer = new LineRenderer();
     }
 
     @Override
     public LayoutResult layout(LayoutContext layoutContext) {
-        Rectangle parentBoundingBox = layoutContext.getBoundingBox();
+        Rectangle boundingBox = layoutContext.getBoundingBox();
 
-        Rectangle boundingBox = parentBoundingBox.clone();
         applyMargins(boundingBox);
-
         applyPaddings(boundingBox);
+
+        occupiedArea = new LayoutArea(layoutContext.getMediaArea().getPageNumber(), new Rectangle(boundingBox.getLeft(), boundingBox.getTop(), boundingBox.getWidth(), 0));
+
+        LineRenderer currentLineRenderer = new LineRenderer(modelElement);
 
         for (Iterator<Renderer> it = childRenderers.iterator(); it.hasNext();) {
             Renderer renderer = it.next();
             if (renderer instanceof TextRenderer) {
-                lineRenderer.childRenderers.add(renderer);
+                currentLineRenderer.childRenderers.add(renderer);
             }
             it.remove();
         }
 
-        LayoutResult lineResult = lineRenderer.layout(new LayoutContext(layoutContext.getMediaArea(), boundingBox));
+        Rectangle layoutBox = boundingBox.clone();
 
-        while (lineResult.getType() == LayoutResult.PARTIAL) {
+        while (currentLineRenderer != null) {
+            LayoutResult lineResult = currentLineRenderer.layout(new LayoutContext(layoutContext.getMediaArea(), layoutBox));
 
-            lineResult = lineRenderer.layout(new LayoutContext(layoutContext.getMediaArea(), boundingBox));
+            occupiedArea.setBoundingBox(Rectangle.getCommonRectangle(occupiedArea.getBoundingBox(), lineResult.getOccupiedArea().getBoundingBox()));
+            layoutBox.setHeight(lineResult.getOccupiedArea().getBoundingBox().getY() - layoutBox.getY());
+
+            lines.add(currentLineRenderer);
+            currentLineRenderer = lineResult.getSplitRenderers().length > 1 ? (LineRenderer) lineResult.getSplitRenderers()[1] : null;
         }
 
-        parentBoundingBox.addHeight(boundingBox.getHeight());
+        removePaddings(occupiedArea.getBoundingBox());
 
-        if (lineResult.getType() != LayoutResult.PARTIAL_OVERFLOW) {
-            return new LayoutResult(LayoutResult.FULL, null);
-        } else {
-            return new LayoutResult(LayoutResult.PARTIAL, null);
+        return new LayoutResult(LayoutResult.FULL, occupiedArea);
+    }
+
+    @Override
+    public void renderChildren(RenderContext renderContext) {
+        for (Renderer renderer : lines) {
+            renderer.render(renderContext);
         }
     }
 

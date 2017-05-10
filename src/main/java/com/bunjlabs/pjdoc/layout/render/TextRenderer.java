@@ -1,16 +1,16 @@
 package com.bunjlabs.pjdoc.layout.render;
 
+import com.bunjlabs.pjdoc.layout.LayoutArea;
 import com.bunjlabs.pjdoc.layout.Rectangle;
 import com.bunjlabs.pjdoc.layout.attributes.Attribute;
 import com.bunjlabs.pjdoc.layout.attributes.Font;
 import com.bunjlabs.pjdoc.layout.elements.Text;
 import java.awt.Color;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 
 /**
  *
@@ -18,12 +18,20 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
  */
 public class TextRenderer extends Renderer<Text> {
 
-    private final List<String> lines = new ArrayList<>();
-
-    private int drawnLines = 0;
+    private PDFont font;
+    private float fontSize;
+    private float leading;
+    private Color textColor;
+    private String text;
+    private String placedText;
 
     public TextRenderer(Text modelElement) {
+        this(modelElement, modelElement.getText());
+    }
+
+    public TextRenderer(Text modelElement, String text) {
         super(modelElement);
+        this.text = text;
     }
 
     @Override
@@ -31,114 +39,103 @@ public class TextRenderer extends Renderer<Text> {
         Rectangle boundingBox = layoutContext.getBoundingBox();
 
         Font pfont = getAttribute(Attribute.FONT);
-
-        PDFont font;
-        if (pfont == null) {
-            font = PDType1Font.HELVETICA;
-        } else {
-            //    font = PDType0Font.load(renderContext.getPDDocument(), new File(pfont.getName()));
-
-        }
-
-        float fontSize = getAttribute(Attribute.FONT_SIZE, 14f);
-        float leading = getAttribute(Attribute.LEADING, 1.5f) * fontSize;
-        Color textColor = getAttribute(Attribute.COLOR, Color.BLACK);
-        String text = modelElement.getText();
+        font = PDType1Font.HELVETICA;
+        fontSize = getAttribute(Attribute.FONT_SIZE, 14f);
+        leading = getAttribute(Attribute.LEADING, 1.5f) * fontSize;
+        textColor = getAttribute(Attribute.COLOR, Color.BLACK);
 
         text = text.trim().replace("\n", "").replace("\r", "");
 
         float width = boundingBox.getWidth();
-        float startX = boundingBox.getLeft();
-        float startY = boundingBox.getTop();
 
-        float firstLineShift = 0;
+        int lastIndex = 0;
+        while (true) {
+            int spaceIndex = text.indexOf(' ', lastIndex + 1);
+            if (spaceIndex < 0) {
+                spaceIndex = text.length();
+            }
 
-        if (!text.isEmpty() && lines.isEmpty()) {
-            //lines.addAll(splitText(font, fontSize, width, text));
+            String subString = text.substring(0, spaceIndex);
+
+            if (calcStringWidth(subString) > width) {
+                placedText = text.substring(0, lastIndex);
+                break;
+            } else if (spaceIndex == text.length()) {
+                placedText = text;
+                break;
+            } else {
+                lastIndex = spaceIndex;
+            }
         }
 
-        int linesToDraw = lines.size() - drawnLines;
+        float placedTextWidth = calcStringWidth(placedText);
 
-        float textHeigth = linesToDraw * leading;
+        occupiedArea = new LayoutArea(
+                layoutContext.getMediaArea().getPageNumber(),
+                new Rectangle(boundingBox.getLeft(), boundingBox.getTop() - leading, placedTextWidth, leading)
+        );
 
-        boolean isPartial = false;
-        if (textHeigth > boundingBox.getHeight()) {
-            linesToDraw = (int) (boundingBox.getHeight() / leading);
-            isPartial = true;
+        if (text.length() > placedText.length()) {
+            TextRenderer leftRenderer = createLeftRenderer();
+
+            TextRenderer rightRenderer = createRightRenderer();
+            rightRenderer.setText(text.substring(lastIndex));
+
+            return new LayoutResult(LayoutResult.PARTIAL_OVERFLOW, occupiedArea, leftRenderer, rightRenderer);
+        } else {
+            return new LayoutResult(LayoutResult.FULL, occupiedArea);
         }
+    }
 
-        textHeigth = linesToDraw * leading;
+    @Override
+    public void render(RenderContext renderContext) {
+        PDPageContentStream stream = renderContext.getPageContentStream(occupiedArea.getPageNumber());
 
-        /*
+        float startX = occupiedArea.getBoundingBox().getLeft();
+        float startY = occupiedArea.getBoundingBox().getBottom();
+
         try {
             stream.beginText();
             stream.setRenderingMode(RenderingMode.FILL);
             stream.setFont(font, fontSize);
-            stream.setLeading(leading);
             stream.setNonStrokingColor(textColor);
-            stream.newLineAtOffset(startX, startY - leading);
+            stream.newLineAtOffset(startX, startY);
 
-            for (int i = drawnLines; i < lines.size() && i < drawnLines + linesToDraw; i++) {
-                stream.showText(lines.get(i));
-                stream.newLine();
-            }
+            stream.showText(placedText);
 
             stream.endText();
             stream.restoreGraphicsState();
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
-        drawnLines += linesToDraw;
-
-        boundingBox.addHeight(textHeigth);
-
-        if (isPartial) {
-            return new LayoutResult(LayoutResult.PARTIAL, null);
-        } else {
-            return new LayoutResult(LayoutResult.FULL, null);
         }
     }
 
-    private static List<String> splitText(PDFont font, float fontSize, float maxWidth, String text) {
-        List<String> lines = new LinkedList<>();
-
-        int lastSpace = -1;
-        float lastLineWidth = 0;
-        while (text.length() > 0) {
-            int spaceIndex = text.indexOf(' ', lastSpace + 1);
-            if (spaceIndex < 0) {
-                spaceIndex = text.length();
-            }
-            String subString = text.substring(0, spaceIndex);
-
-            try {
-                lastLineWidth = fontSize * font.getStringWidth(subString) / 1000f;
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-
-            if (lastLineWidth > maxWidth) {
-                if (lastSpace < 0) {
-                    lastSpace = spaceIndex;
-                }
-                subString = text.substring(0, lastSpace);
-                lines.add(subString);
-                text = text.substring(lastSpace).trim();
-
-                lastSpace = -1;
-            } else if (spaceIndex == text.length()) {
-                lines.add(text);
-                text = "";
-            } else {
-                lastSpace = spaceIndex;
-            }
-        }
-
-        return lines;
+    public void setText(String text) {
+        this.text = text;
     }
 
-    @Override
-    public void render(RenderContext renderContext) {
+    private float calcStringWidth(String str) {
+        try {
+            return fontSize * font.getStringWidth(str) / 1000f;
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return 0f;
+    }
+
+    protected TextRenderer createLeftRenderer() {
+        TextRenderer renderer = (TextRenderer) getNextRenderer();
+        renderer.occupiedArea = occupiedArea;
+        renderer.modelElement = modelElement;
+        renderer.placedText = placedText;
+        return renderer;
+    }
+
+    protected TextRenderer createRightRenderer() {
+        TextRenderer renderer = (TextRenderer) getNextRenderer();
+        renderer.modelElement = modelElement;
+        return renderer;
     }
 
     @Override

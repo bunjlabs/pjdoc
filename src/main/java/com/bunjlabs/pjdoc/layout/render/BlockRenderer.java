@@ -2,14 +2,8 @@ package com.bunjlabs.pjdoc.layout.render;
 
 import com.bunjlabs.pjdoc.layout.LayoutArea;
 import com.bunjlabs.pjdoc.layout.Rectangle;
-import com.bunjlabs.pjdoc.layout.attributes.Attribute;
 import com.bunjlabs.pjdoc.layout.elements.BlockElement;
-import java.awt.Color;
-import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 /**
  *
@@ -23,32 +17,33 @@ public abstract class BlockRenderer<E extends BlockElement> extends Renderer<E> 
 
     @Override
     public LayoutResult layout(LayoutContext layoutContext) {
-        Rectangle parentBoundingBox = layoutContext.getBoundingBox();
+        Rectangle boundingBox = layoutContext.getBoundingBox();
 
-        applyMargins(parentBoundingBox);
-        applyPaddings(parentBoundingBox);
+        applyMargins(boundingBox);
+        applyPaddings(boundingBox);
 
-        occupiedArea = new LayoutArea(0, new Rectangle(parentBoundingBox.getLeft(), parentBoundingBox.getTop(), parentBoundingBox.getWidth(), 0));
+        occupiedArea = new LayoutArea(layoutContext.getMediaArea().getPageNumber(), new Rectangle(boundingBox.getLeft(), boundingBox.getTop(), boundingBox.getWidth(), 0));
 
-        Rectangle layoutBox = parentBoundingBox.clone();
+        Rectangle layoutBox = boundingBox.clone();
 
-        int processedChildRenderers = 0;
+        int currentChild = 0;
 
-        for (Renderer renderer : childRenderers) {
+        for (Iterator<Renderer> it = childRenderers.iterator(); it.hasNext(); currentChild++) {
+            Renderer renderer = it.next();
 
             LayoutResult layoutResult;
             while ((layoutResult = renderer.layout(new LayoutContext(layoutContext.getMediaArea(), layoutBox))).getType() != LayoutResult.FULL) {
                 if (layoutResult.getType() == LayoutResult.PARTIAL) {
                     Renderer leftRenderer = createLeftRenderer();
-                    leftRenderer.childRenderers.addAll(childRenderers.subList(0, processedChildRenderers));
+                    leftRenderer.childRenderers.addAll(childRenderers.subList(0, currentChild));
                     leftRenderer.childRenderers.addAll(layoutResult.getSplitRenderers()[0].childRenderers);
 
                     Renderer rightRenderer = createRightRenderer();
                     rightRenderer.childRenderers.addAll(layoutResult.getSplitRenderers()[1].childRenderers);
-                    rightRenderer.childRenderers.addAll(childRenderers.subList(processedChildRenderers, childRenderers.size()));
+                    rightRenderer.childRenderers.addAll(childRenderers.subList(currentChild, childRenderers.size()));
 
                     removePaddings(occupiedArea.getBoundingBox());
-                    
+
                     return new LayoutResult(LayoutResult.PARTIAL, occupiedArea, leftRenderer, rightRenderer);
                 }
             }
@@ -58,29 +53,12 @@ public abstract class BlockRenderer<E extends BlockElement> extends Renderer<E> 
             if (layoutResult.getType() == LayoutResult.FULL) {
                 layoutBox.setHeight(layoutResult.getOccupiedArea().getBoundingBox().getY() - layoutBox.getY());
             }
-
-            processedChildRenderers++;
         }
 
         removePaddings(occupiedArea.getBoundingBox());
         //removeMargins(occupiedArea.getBoundingBox());
 
         return new LayoutResult(LayoutResult.FULL, occupiedArea);
-
-    }
-
-    @Override
-    public void render(RenderContext renderContext) {
-        Rectangle boundingBox = occupiedArea.getBoundingBox();
-
-        drawBackground(renderContext, boundingBox);
-        drawBorder(renderContext, boundingBox);
-
-        applyPaddings(boundingBox);
-
-        for (Renderer renderer : childRenderers) {
-            renderer.render(renderContext);
-        }
 
     }
 
@@ -97,62 +75,4 @@ public abstract class BlockRenderer<E extends BlockElement> extends Renderer<E> 
         return renderer;
     }
 
-    protected void applyMargins(Rectangle boundingBox) {
-        float marginTop = getAttribute(Attribute.MARGIN_TOP, 0f);
-        float marginRight = getAttribute(Attribute.MARGIN_RIGHT, 0f);
-        float marginBottom = getAttribute(Attribute.MARGIN_BOTTOM, 0f);
-        float marginLeft = getAttribute(Attribute.MARGIN_LEFT, 0f);
-
-        boundingBox.applyIndents(marginTop, marginRight, marginBottom, marginLeft);
-    }
-
-    protected void applyPaddings(Rectangle boundingBox) {
-        float paddingTop = getAttribute(Attribute.PADDING_TOP, 0f);
-        float paddingRight = getAttribute(Attribute.PADDING_RIGHT, 0f);
-        float paddingBottom = getAttribute(Attribute.PADDING_BOTTOM, 0f);
-        float paddingLeft = getAttribute(Attribute.PADDING_LEFT, 0f);
-
-        boundingBox.applyIndents(paddingTop, paddingRight, paddingBottom, paddingLeft);
-    }
-
-    protected void removeMargins(Rectangle boundingBox) {
-        float marginTop = getAttribute(Attribute.MARGIN_TOP, 0f);
-        float marginRight = getAttribute(Attribute.MARGIN_RIGHT, 0f);
-        float marginBottom = getAttribute(Attribute.MARGIN_BOTTOM, 0f);
-        float marginLeft = getAttribute(Attribute.MARGIN_LEFT, 0f);
-
-        boundingBox.applyIndents(-marginTop, -marginRight, -marginBottom, -marginLeft);
-    }
-
-    protected void removePaddings(Rectangle boundingBox) {
-        float paddingTop = getAttribute(Attribute.PADDING_TOP, 0f);
-        float paddingRight = getAttribute(Attribute.PADDING_RIGHT, 0f);
-        float paddingBottom = getAttribute(Attribute.PADDING_BOTTOM, 0f);
-        float paddingLeft = getAttribute(Attribute.PADDING_LEFT, 0f);
-
-        boundingBox.applyIndents(-paddingTop, -paddingRight, -paddingBottom, -paddingLeft);
-    }
-
-    protected void drawBackground(RenderContext renderContext, Rectangle boundingBox) {
-        PDPageContentStream stream = renderContext.getPageContentStream(occupiedArea.getPageNumber());
-        Color backgroundColor = getAttribute(Attribute.BACKGROUND_COLOR);
-
-        if (backgroundColor == null) {
-            return;
-        }
-
-        try {
-            stream.setStrokingColor(backgroundColor);
-            stream.setNonStrokingColor(backgroundColor);
-            stream.addRect(boundingBox.getX(), boundingBox.getY(), boundingBox.getWidth(), boundingBox.getHeight());
-            stream.fill();
-            stream.restoreGraphicsState();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-    }
-
-    protected void drawBorder(RenderContext renderContext, Rectangle boundingBox) {
-    }
 }
