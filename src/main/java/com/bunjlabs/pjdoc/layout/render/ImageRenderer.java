@@ -24,9 +24,7 @@ public class ImageRenderer extends Renderer<Image> {
         float width = getAttribute(Attribute.WIDTH, 0f);
         float heigth = getAttribute(Attribute.HEIGHT, 0f);
 
-        PDImageXObject createFromImage = null;// = LosslessFactory.createFromImage(renderContext.getPDDocument(), modelElement.getImage());
-
-        float aspectRatio = ((float) createFromImage.getWidth()) / ((float) createFromImage.getHeight());
+        /*float aspectRatio = ((float) createFromImage.getWidth()) / ((float) createFromImage.getHeight());
 
         if (width == 0f && heigth == 0f) {
             width = createFromImage.getWidth() / 96;
@@ -35,7 +33,7 @@ public class ImageRenderer extends Renderer<Image> {
             width = heigth * aspectRatio;
         } else if (heigth == 0f) {
             heigth = width / aspectRatio;
-        }
+        }*/
 
         //stream.drawImage(createFromImage, boundingBox.getLowerLeftX(), boundingBox.getUpperRightY() - heigth, width, heigth);
 
@@ -61,5 +59,4 @@ public class ImageRenderer extends Renderer<Image> {
     public Renderer getNextRenderer() {
         return new ImageRenderer(modelElement);
     }
-
 }

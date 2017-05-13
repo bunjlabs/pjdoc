@@ -42,7 +42,14 @@ public class LineRenderer extends Renderer<Paragraph> {
                 continue;
             }
 
-            LayoutResult layoutResult = renderer.layout(new LayoutContext(layoutContext.getMediaArea(), linebox));
+            LayoutResult layoutResult = renderer.layout(layoutContext.extend(linebox));
+
+            if (layoutResult.getType() == LayoutResult.NOTHING) {
+                Renderer rightRenderer = createRightRenderer();
+                rightRenderer.childRenderers.addAll(childRenderers);
+
+                return new LayoutResult(LayoutResult.NOTHING, occupiedArea, rightRenderer);
+            }
 
             currentXOffset += layoutResult.getOccupiedArea().getBoundingBox().getWidth();
             maxHeight = Math.max(maxHeight, layoutResult.getOccupiedArea().getBoundingBox().getHeight());

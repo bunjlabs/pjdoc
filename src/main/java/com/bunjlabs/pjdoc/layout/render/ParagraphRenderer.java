@@ -41,10 +41,21 @@ public class ParagraphRenderer extends BlockRenderer<Paragraph> {
         Rectangle layoutBox = boundingBox.clone();
 
         while (currentLineRenderer != null) {
-            LayoutResult lineResult = currentLineRenderer.layout(new LayoutContext(layoutContext.getMediaArea(), layoutBox));
+            LayoutResult lineResult = currentLineRenderer.layout(layoutContext.extend(layoutBox));
 
-            occupiedArea.setBoundingBox(Rectangle.getCommonRectangle(occupiedArea.getBoundingBox(), lineResult.getOccupiedArea().getBoundingBox()));
-            layoutBox.setHeight(lineResult.getOccupiedArea().getBoundingBox().getY() - layoutBox.getY());
+            if (lineResult.getType() == LayoutResult.NOTHING) {
+                ParagraphRenderer leftRenderer = createLeftRenderer();
+                leftRenderer.lines.addAll(lines);
+
+                ParagraphRenderer rightRenderer = createRightRenderer();
+                rightRenderer.childRenderers.addAll(currentLineRenderer.childRenderers);
+
+                return new LayoutResult(LayoutResult.PARTIAL, occupiedArea, leftRenderer, rightRenderer);
+            }
+
+            float lineHight = lineResult.getOccupiedArea().getBoundingBox().getHeight();
+            occupiedArea.getBoundingBox().addBottom(lineHight);
+            layoutBox.addHeight(-lineHight);
 
             lines.add(currentLineRenderer);
             currentLineRenderer = lineResult.getSplitRenderers().length > 1 ? (LineRenderer) lineResult.getSplitRenderers()[1] : null;
@@ -60,6 +71,19 @@ public class ParagraphRenderer extends BlockRenderer<Paragraph> {
         for (Renderer renderer : lines) {
             renderer.render(renderContext);
         }
+    }
+
+    protected ParagraphRenderer createLeftRenderer() {
+        ParagraphRenderer renderer = (ParagraphRenderer) getNextRenderer();
+        renderer.modelElement = modelElement;
+        renderer.occupiedArea = occupiedArea;
+        return renderer;
+    }
+
+    protected ParagraphRenderer createRightRenderer() {
+        ParagraphRenderer renderer = (ParagraphRenderer) getNextRenderer();
+        renderer.modelElement = modelElement;
+        return renderer;
     }
 
     @Override

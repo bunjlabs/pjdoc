@@ -1,6 +1,6 @@
 package com.bunjlabs.pjdoc.xml.parser;
 
-import com.bunjlabs.pjdoc.layout.attributes.Font;
+import com.bunjlabs.pjdoc.font.Font;
 import com.bunjlabs.pjdoc.layout.attributes.Style;
 import com.bunjlabs.pjdoc.layout.attributes.TextAlign;
 import com.bunjlabs.pjdoc.layout.elements.Document;

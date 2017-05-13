@@ -5,3 +5,5 @@ target/
 example-template.xml
 example.xml
 
+src/main/java/com/bunjlabs/pjdoc/PjMain.java
+

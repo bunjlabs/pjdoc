@@ -1,9 +1,6 @@
 package com.bunjlabs.pjdoc.layout.render;
 
 import com.bunjlabs.pjdoc.layout.LayoutArea;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  *
@@ -11,6 +8,7 @@ import java.util.List;
  */
 public class LayoutResult {
 
+    public static final int NOTHING = 0;
     public static final int FULL = 1;
     public static final int PARTIAL = 2;
     public static final int PARTIAL_OVERFLOW = 3;

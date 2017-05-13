@@ -15,13 +15,24 @@ import org.xml.sax.SAXException;
  */
 public class FileTemplateProvider implements TemplateProvider {
 
+    private final String baseDir;
+
+    public FileTemplateProvider() {
+        this("./");
+    }
+
+    public FileTemplateProvider(String baseDir) {
+        this.baseDir = baseDir;
+    }
+
     @Override
     public Node provide(String name) throws XmlParseException {
         Node root;
+        File templateFile = new File(baseDir, name);
 
         try {
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            root = documentBuilder.parse(new File(name)).getDocumentElement();
+            root = documentBuilder.parse(templateFile).getDocumentElement();
         } catch (SAXException | IOException | ParserConfigurationException ex) {
             throw new XmlParseException("Unable to parse xml document", ex);
         }

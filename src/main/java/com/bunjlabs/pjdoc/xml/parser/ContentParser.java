@@ -6,6 +6,7 @@ import com.bunjlabs.pjdoc.layout.elements.Element;
 import com.bunjlabs.pjdoc.layout.elements.Flex;
 import com.bunjlabs.pjdoc.layout.elements.Image;
 import com.bunjlabs.pjdoc.layout.elements.Paragraph;
+import com.bunjlabs.pjdoc.layout.elements.Text;
 import com.bunjlabs.pjdoc.layout.elements.barcode.Barcode;
 import com.bunjlabs.pjdoc.layout.elements.barcode.Code128;
 import com.bunjlabs.pjdoc.layout.elements.barcode.Code39;
@@ -19,8 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import org.w3c.dom.Node;
 
@@ -42,6 +41,8 @@ public class ContentParser {
         map.put("div", (c, n) -> ContentParser.this.parseDiv(c, n));
         map.put("flex", (c, n) -> ContentParser.this.parseFlex(c, n));
         map.put("p", (c, n) -> ContentParser.this.parseParagraph(c, n));
+        map.put("t", (c, n) -> ContentParser.this.parseText(c, n));
+        map.put("", (c, n) -> ContentParser.this.parseText(c, n));
         map.put("image", (c, n) -> ContentParser.this.parseImage(c, n));
         map.put("barcode", (c, n) -> ContentParser.this.parseBarcode(c, n));
         map.put("place-content", (c, n) -> ContentParser.this.parsePlaceContent(c, n));
@@ -90,11 +91,23 @@ public class ContentParser {
 
         ParserUtils.parseStyles(p, node.getAttributes());
 
-        String text = node.getTextContent();
+        List<Element> elements = context.parseChildren(tagParserAdapters, node);
 
-        p.add(text != null ? text : "");
+        elements.forEach((e) -> {
+            if (e instanceof Text) {
+                p.add((Text) e);
+            }
+        });
 
         return Arrays.asList(p);
+    }
+
+    private List<Element> parseText(ContentParserContext context, Node node) throws XmlParseException {
+        Text t = new Text(node.getTextContent());
+
+        ParserUtils.parseStyles(t, node.getAttributes());
+
+        return Arrays.asList(t);
     }
 
     private List<Element> parseImage(ContentParserContext context, Node node) throws XmlParseException {

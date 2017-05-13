@@ -1,5 +1,7 @@
 package com.bunjlabs.pjdoc.layout.render;
 
+import com.bunjlabs.pjdoc.font.FontFileProvider;
+import com.bunjlabs.pjdoc.font.FontProvider;
 import com.bunjlabs.pjdoc.layout.LayoutArea;
 import com.bunjlabs.pjdoc.layout.Rectangle;
 import com.bunjlabs.pjdoc.layout.elements.Document;
@@ -27,33 +29,39 @@ public class DocumentRenderer {
 
     private LayoutArea currentPageArea;
 
+    private FontProvider fontProvider;
+
     public DocumentRenderer(PDDocument pDDocument, Document document) {
         this.pDDocument = pDDocument;
         this.document = document;
-
         this.currentPageArea = new LayoutArea(0, new Rectangle(document.getEffectiveArea()));
+
+        this.fontProvider = new FontFileProvider(this.pDDocument);
 
         this.document.getChildren().forEach((e) -> addChild(RendererFactory.createRendererSubtree(e)));
     }
 
     private void addChild(Renderer renderer) {
-        childRenderers.add(renderer);
-
-        LayoutContext layoutContext = new LayoutContext(currentPageArea.clone());
+        LayoutContext layoutContext = new LayoutContext(this, currentPageArea.clone());
 
         List<Renderer> resultRenderers = new LinkedList<>();
 
         LayoutResult layoutResult;
         while ((layoutResult = renderer.layout(layoutContext)).getType() != LayoutResult.FULL) {
             if (layoutResult.getType() == LayoutResult.PARTIAL) {
-
                 resultRenderers.add(layoutResult.getSplitRenderers()[0]);
 
                 updateCurrentArea();
 
-                layoutContext = new LayoutContext(currentPageArea.clone());
+                layoutContext = new LayoutContext(this, currentPageArea.clone());
                 renderer = layoutResult.getSplitRenderers()[1];
             }
+        }
+        
+        resultRenderers.add(renderer);
+
+        if (layoutResult.getType() == LayoutResult.FULL) {
+            layoutContext.getBoundingBox().addHeight(-layoutResult.getOccupiedArea().getBoundingBox().getHeight());
         }
 
         childRenderers.addAll(resultRenderers);
@@ -91,5 +99,13 @@ public class DocumentRenderer {
             pages.add(page);
             pagesContentStream.add(pageContentStream);
         }
+    }
+
+    public void setFontProvider(FontProvider fontProvider) {
+        this.fontProvider = fontProvider;
+    }
+
+    public FontProvider getFontProvider() {
+        return fontProvider;
     }
 }

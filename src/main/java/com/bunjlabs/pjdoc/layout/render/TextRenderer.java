@@ -3,10 +3,12 @@ package com.bunjlabs.pjdoc.layout.render;
 import com.bunjlabs.pjdoc.layout.LayoutArea;
 import com.bunjlabs.pjdoc.layout.Rectangle;
 import com.bunjlabs.pjdoc.layout.attributes.Attribute;
-import com.bunjlabs.pjdoc.layout.attributes.Font;
+import com.bunjlabs.pjdoc.font.Font;
 import com.bunjlabs.pjdoc.layout.elements.Text;
 import java.awt.Color;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
@@ -39,12 +41,22 @@ public class TextRenderer extends Renderer<Text> {
         Rectangle boundingBox = layoutContext.getBoundingBox();
 
         Font pfont = getAttribute(Attribute.FONT);
-        font = PDType1Font.HELVETICA;
+
+        if (pfont == null) {
+            font = PDType1Font.HELVETICA;
+        } else {
+            try {
+                font = layoutContext.getDocumentRenderer().getFontProvider().provide(pfont.getName());
+            } catch (IOException ex) {
+                font = PDType1Font.HELVETICA;
+            }
+        }
+
         fontSize = getAttribute(Attribute.FONT_SIZE, 14f);
         leading = getAttribute(Attribute.LEADING, 1.5f) * fontSize;
         textColor = getAttribute(Attribute.COLOR, Color.BLACK);
 
-        text = text.trim().replace("\n", "").replace("\r", "");
+        text = text.replace("\n", "").replace("\r", "");
 
         float width = boundingBox.getWidth();
 
@@ -75,11 +87,15 @@ public class TextRenderer extends Renderer<Text> {
                 new Rectangle(boundingBox.getLeft(), boundingBox.getTop() - leading, placedTextWidth, leading)
         );
 
-        if (text.length() > placedText.length()) {
+        if (placedText.isEmpty() || boundingBox.getHeight() < leading) {
+            TextRenderer rightRenderer = createRightRenderer();
+
+            return new LayoutResult(LayoutResult.NOTHING, occupiedArea, rightRenderer);
+        } else if (text.length() > placedText.length()) {
             TextRenderer leftRenderer = createLeftRenderer();
 
             TextRenderer rightRenderer = createRightRenderer();
-            rightRenderer.setText(text.substring(lastIndex));
+            rightRenderer.setText(text.substring(lastIndex + 1));
 
             return new LayoutResult(LayoutResult.PARTIAL_OVERFLOW, occupiedArea, leftRenderer, rightRenderer);
         } else {

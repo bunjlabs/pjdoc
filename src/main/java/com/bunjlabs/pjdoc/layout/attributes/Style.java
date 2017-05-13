@@ -1,5 +1,6 @@
 package com.bunjlabs.pjdoc.layout.attributes;
 
+import com.bunjlabs.pjdoc.font.Font;
 import java.awt.Color;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 

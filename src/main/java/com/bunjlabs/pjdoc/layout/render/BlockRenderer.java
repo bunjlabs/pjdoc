@@ -32,15 +32,15 @@ public abstract class BlockRenderer<E extends BlockElement> extends Renderer<E> 
             Renderer renderer = it.next();
 
             LayoutResult layoutResult;
-            while ((layoutResult = renderer.layout(new LayoutContext(layoutContext.getMediaArea(), layoutBox))).getType() != LayoutResult.FULL) {
+            while ((layoutResult = renderer.layout(layoutContext.extend(layoutBox))).getType() != LayoutResult.FULL) {
                 if (layoutResult.getType() == LayoutResult.PARTIAL) {
                     Renderer leftRenderer = createLeftRenderer();
                     leftRenderer.childRenderers.addAll(childRenderers.subList(0, currentChild));
-                    leftRenderer.childRenderers.addAll(layoutResult.getSplitRenderers()[0].childRenderers);
+                    leftRenderer.childRenderers.add(layoutResult.getSplitRenderers()[0]);
 
                     Renderer rightRenderer = createRightRenderer();
-                    rightRenderer.childRenderers.addAll(layoutResult.getSplitRenderers()[1].childRenderers);
-                    rightRenderer.childRenderers.addAll(childRenderers.subList(currentChild, childRenderers.size()));
+                    rightRenderer.childRenderers.add(layoutResult.getSplitRenderers()[1]);
+                    rightRenderer.childRenderers.addAll(childRenderers.subList(currentChild + 1, childRenderers.size()));
 
                     removePaddings(occupiedArea.getBoundingBox());
 
@@ -51,7 +51,8 @@ public abstract class BlockRenderer<E extends BlockElement> extends Renderer<E> 
             occupiedArea.setBoundingBox(Rectangle.getCommonRectangle(occupiedArea.getBoundingBox(), layoutResult.getOccupiedArea().getBoundingBox()));
 
             if (layoutResult.getType() == LayoutResult.FULL) {
-                layoutBox.setHeight(layoutResult.getOccupiedArea().getBoundingBox().getY() - layoutBox.getY());
+
+                layoutBox.addHeight(-layoutResult.getOccupiedArea().getBoundingBox().getHeight());
             }
         }
 

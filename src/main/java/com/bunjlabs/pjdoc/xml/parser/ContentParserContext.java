@@ -32,11 +32,18 @@ public class ContentParserContext {
 
         for (int i = 0; i < subroot.getChildNodes().getLength(); i++) {
             Node node = subroot.getChildNodes().item(i);
-            if (node.getNodeType() != Node.ELEMENT_NODE) {
-                continue;
+            ContentParserAdapter adapter;
+            switch (node.getNodeType()) {
+                case Node.ELEMENT_NODE:
+                    adapter = contentParserAdapters.get(node.getNodeName());
+                    break;
+                case Node.TEXT_NODE:
+                    adapter = contentParserAdapters.get("");
+                    break;
+                default:
+                    continue;
             }
 
-            ContentParserAdapter adapter = contentParserAdapters.get(node.getNodeName());
             if (adapter == null) {
                 throw new UnsupportedOperationException("Tag '" + node.getNodeName() + "' not supported in content context");
             }

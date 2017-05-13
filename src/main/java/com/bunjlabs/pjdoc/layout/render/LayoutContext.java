@@ -9,17 +9,21 @@ import com.bunjlabs.pjdoc.layout.Rectangle;
  */
 public class LayoutContext {
 
-    private final LayoutArea mediaArea;
-    private Rectangle boundingBox;
+    private final DocumentRenderer documentRenderer;
 
-    public LayoutContext(LayoutArea mediaArea) {
+    private final LayoutArea mediaArea;
+    private final Rectangle boundingBox;
+
+    public LayoutContext(DocumentRenderer documentRenderer, LayoutArea mediaArea) {
+        this.documentRenderer = documentRenderer;
         this.mediaArea = mediaArea;
         this.boundingBox = mediaArea.getBoundingBox().clone();
     }
 
-    public LayoutContext(LayoutArea mediaArea, Rectangle mediaBox) {
+    public LayoutContext(DocumentRenderer documentRenderer, LayoutArea mediaArea, Rectangle boundingBox) {
+        this.documentRenderer = documentRenderer;
         this.mediaArea = mediaArea;
-        this.boundingBox = mediaBox.clone();
+        this.boundingBox = boundingBox.clone();
     }
 
     public LayoutArea getMediaArea() {
@@ -28,5 +32,17 @@ public class LayoutContext {
 
     public Rectangle getBoundingBox() {
         return boundingBox;
+    }
+
+    public LayoutContext extend() {
+        return new LayoutContext(documentRenderer, mediaArea, boundingBox);
+    }
+
+    public LayoutContext extend(Rectangle boundingBox) {
+        return new LayoutContext(documentRenderer, mediaArea, boundingBox);
+    }
+
+    public DocumentRenderer getDocumentRenderer() {
+        return documentRenderer;
     }
 }

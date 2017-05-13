@@ -1,4 +1,4 @@
-package com.bunjlabs.pjdoc.layout.attributes;
+package com.bunjlabs.pjdoc.font;
 
 /**
  *

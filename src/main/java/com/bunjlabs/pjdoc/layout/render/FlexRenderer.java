@@ -35,13 +35,13 @@ public class FlexRenderer extends BlockRenderer<Flex> {
         for (Iterator<Renderer> it = childRenderers.iterator(); it.hasNext();) {
             Renderer renderer = it.next();
 
-            LayoutResult layoutResult = renderer.layout(new LayoutContext(layoutContext.getMediaArea(), itemLayoutBox));
+            LayoutResult layoutResult = renderer.layout(layoutContext.extend(itemLayoutBox));
             finalHeigth = Math.max(finalHeigth, layoutResult.getOccupiedArea().getBoundingBox().getHeight());
-
-            occupiedArea.setBoundingBox(Rectangle.getCommonRectangle(occupiedArea.getBoundingBox(), layoutResult.getOccupiedArea().getBoundingBox()));
 
             itemLayoutBox.moveX(itemWidth);
         }
+
+        occupiedArea.getBoundingBox().setHeight(finalHeigth).moveY(-finalHeigth);
 
         removePaddings(occupiedArea.getBoundingBox());
         //removeMargins(occupiedArea.getBoundingBox());
