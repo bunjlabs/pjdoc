@@ -18,6 +18,8 @@ public class DocumentParser {
     private final ContentParser contentParser;
     private final TemplateParser templateParser;
     private final Map<String, DocumentParserAdapter> parserAdapters;
+    private final Map<String, String> parameters = new HashMap<>();
+    ;
     private final Map<String, List<Element>> contents = new HashMap<>();
 
     public DocumentParser() {
@@ -56,25 +58,31 @@ public class DocumentParser {
 
         List<Element> mainElementsTree = contents.get("main");
 
-        mainElementsTree.forEach((e) -> {
-            if (e instanceof BlockElement) {
-                document.add((BlockElement) e);
-            }
-        });
+        if (mainElementsTree != null) {
+            mainElementsTree.forEach((e) -> {
+                if (e instanceof BlockElement) {
+                    document.add((BlockElement) e);
+                }
+            });
+        }
 
         return document;
     }
 
     private void parseContent(DocumentParserContext context, Node node) throws XmlParseException {
-        Node idNode = node.getAttributes().getNamedItem("id");
+        Node idNode = node.getAttributes().getNamedItem("name");
 
         String id = idNode == null ? "" : idNode.getNodeValue();
 
-        ContentParserContext contentParserContext = new ContentParserContext(id);
+        ContentParserContext contentParserContext = new ContentParserContext(id, parameters);
 
         List<Element> parseContent = contentParser.parseContent(contentParserContext, node);
 
         contents.put(id, parseContent);
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
     }
 
 }

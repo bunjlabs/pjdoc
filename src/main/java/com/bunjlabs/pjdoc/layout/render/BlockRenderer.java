@@ -57,7 +57,7 @@ public abstract class BlockRenderer<E extends BlockElement> extends Renderer<E> 
         }
 
         removePaddings(occupiedArea.getBoundingBox());
-        //removeMargins(occupiedArea.getBoundingBox());
+        removeMargins(occupiedArea.getBoundingBox());
 
         return new LayoutResult(LayoutResult.FULL, occupiedArea);
 

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pj-document page-size="A4" font-family="Roboto">
+    <content name="main" >
+        <div>
+            <barcode type="code39" width="60mm" content="@contract.barcode"/>
+        </div>
+    </content>
+</pj-document>

@@ -15,15 +15,18 @@ import org.w3c.dom.Node;
 public class ContentParserContext {
 
     private final String contentId;
+    private final Map<String, String> parameters;
     private final Map<String, List<Element>> contents;
 
-    public ContentParserContext(String contentId) {
+    public ContentParserContext(String contentId, Map<String, String> parameters) {
         this.contentId = contentId;
+        this.parameters = parameters;
         this.contents = new HashMap<>();
     }
 
-    public ContentParserContext(String contentId, Map<String, List<Element>> contents) {
+    public ContentParserContext(String contentId, Map<String, String> parameters, Map<String, List<Element>> contents) {
         this.contentId = contentId;
+        this.parameters = parameters;
         this.contents = contents;
     }
 
@@ -59,5 +62,9 @@ public class ContentParserContext {
 
     public Map<String, List<Element>> getContents() {
         return contents;
+    }
+
+    public String getParameter(String key) {
+        return parameters.get(key);
     }
 }

@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,6 +36,10 @@ public class XmlWorker {
     public XmlWorker(TemplateProvider templateProvider) {
         this.templateProvider = templateProvider;
         this.documentParser = new DocumentParser();
+    }
+
+    public Map<String, String> getParameters() {
+        return this.documentParser.getParameters();
     }
 
     public Document work(File f) throws XmlParseException, FileNotFoundException {

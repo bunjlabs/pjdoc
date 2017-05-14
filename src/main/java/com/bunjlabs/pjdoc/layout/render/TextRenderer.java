@@ -1,17 +1,16 @@
 package com.bunjlabs.pjdoc.layout.render;
 
+import com.bunjlabs.pjdoc.font.FontFamily;
+import com.bunjlabs.pjdoc.font.FontStyle;
+import com.bunjlabs.pjdoc.font.FontWeight;
 import com.bunjlabs.pjdoc.layout.LayoutArea;
 import com.bunjlabs.pjdoc.layout.Rectangle;
 import com.bunjlabs.pjdoc.layout.attributes.Attribute;
-import com.bunjlabs.pjdoc.font.Font;
 import com.bunjlabs.pjdoc.layout.elements.Text;
 import java.awt.Color;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 
 /**
@@ -20,11 +19,15 @@ import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
  */
 public class TextRenderer extends Renderer<Text> {
 
-    private PDFont font;
+    private FontFamily fontFamily;
     private float fontSize;
+    private FontStyle fontStyle;
+    private FontWeight fontWeight;
     private float leading;
     private Color textColor;
     private String text;
+
+    private PDFont pdfont;
     private String placedText;
 
     public TextRenderer(Text modelElement) {
@@ -40,21 +43,14 @@ public class TextRenderer extends Renderer<Text> {
     public LayoutResult layout(LayoutContext layoutContext) {
         Rectangle boundingBox = layoutContext.getBoundingBox();
 
-        Font pfont = getAttribute(Attribute.FONT);
-
-        if (pfont == null) {
-            font = PDType1Font.HELVETICA;
-        } else {
-            try {
-                font = layoutContext.getDocumentRenderer().getFontProvider().provide(pfont.getName());
-            } catch (IOException ex) {
-                font = PDType1Font.HELVETICA;
-            }
-        }
-
+        fontFamily = getAttribute(Attribute.FONT_FAMILY);
         fontSize = getAttribute(Attribute.FONT_SIZE, 14f);
+        fontStyle = getAttribute(Attribute.FONT_STYLE, FontStyle.NORMAL);
+        fontWeight = getAttribute(Attribute.FONT_WEIGHT, FontWeight.NORMAL);
         leading = getAttribute(Attribute.LEADING, 1.5f) * fontSize;
         textColor = getAttribute(Attribute.COLOR, Color.BLACK);
+
+        pdfont = layoutContext.getDocumentRenderer().getFontProvider().provide(fontFamily, fontStyle, fontWeight);
 
         text = text.replace("\n", "").replace("\r", "");
 
@@ -87,7 +83,7 @@ public class TextRenderer extends Renderer<Text> {
                 new Rectangle(boundingBox.getLeft(), boundingBox.getTop() - leading, placedTextWidth, leading)
         );
 
-        if (placedText.isEmpty() || boundingBox.getHeight() < leading) {
+        if ((!text.isEmpty() && placedText.isEmpty()) || boundingBox.getHeight() < leading) {
             TextRenderer rightRenderer = createRightRenderer();
 
             return new LayoutResult(LayoutResult.NOTHING, occupiedArea, rightRenderer);
@@ -113,7 +109,7 @@ public class TextRenderer extends Renderer<Text> {
         try {
             stream.beginText();
             stream.setRenderingMode(RenderingMode.FILL);
-            stream.setFont(font, fontSize);
+            stream.setFont(pdfont, fontSize);
             stream.setNonStrokingColor(textColor);
             stream.newLineAtOffset(startX, startY);
 
@@ -132,7 +128,7 @@ public class TextRenderer extends Renderer<Text> {
 
     private float calcStringWidth(String str) {
         try {
-            return fontSize * font.getStringWidth(str) / 1000f;
+            return fontSize * pdfont.getStringWidth(str) / 1000f;
         } catch (IOException ex) {
             ex.printStackTrace();
         }

@@ -1,12 +1,11 @@
 package com.bunjlabs.pjdoc.layout.render;
 
-import com.bunjlabs.pjdoc.font.FontFileProvider;
+import com.bunjlabs.pjdoc.font.DefaultFontProvider;
 import com.bunjlabs.pjdoc.font.FontProvider;
 import com.bunjlabs.pjdoc.layout.LayoutArea;
 import com.bunjlabs.pjdoc.layout.Rectangle;
 import com.bunjlabs.pjdoc.layout.elements.Document;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -36,9 +35,7 @@ public class DocumentRenderer {
         this.document = document;
         this.currentPageArea = new LayoutArea(0, new Rectangle(document.getEffectiveArea()));
 
-        this.fontProvider = new FontFileProvider(this.pDDocument);
-
-        this.document.getChildren().forEach((e) -> addChild(RendererFactory.createRendererSubtree(e)));
+        this.fontProvider = new DefaultFontProvider(this.pDDocument);
     }
 
     private void addChild(Renderer renderer) {
@@ -57,7 +54,7 @@ public class DocumentRenderer {
                 renderer = layoutResult.getSplitRenderers()[1];
             }
         }
-        
+
         resultRenderers.add(renderer);
 
         if (layoutResult.getType() == LayoutResult.FULL) {
@@ -68,6 +65,8 @@ public class DocumentRenderer {
     }
 
     public void render() throws IOException {
+        this.document.getChildren().forEach((e) -> addChild(RendererFactory.createRendererSubtree(e)));
+
         RenderContext renderContext = new RenderContext(pDDocument, pagesContentStream);
 
         addPages();
@@ -107,5 +106,13 @@ public class DocumentRenderer {
 
     public FontProvider getFontProvider() {
         return fontProvider;
+    }
+
+    public PDDocument getPDDocument() {
+        return pDDocument;
+    }
+
+    public Document getDocument() {
+        return document;
     }
 }

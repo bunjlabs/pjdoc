@@ -7,8 +7,10 @@ package com.bunjlabs.pjdoc.layout.attributes;
 public enum Attribute {
     COLOR,
     BACKGROUND_COLOR,
-    FONT,
+    FONT_FAMILY,
     FONT_SIZE,
+    FONT_WEIGHT,
+    FONT_STYLE,
     LEADING,
     TEXT_ALIGN,
     WIDTH,
@@ -28,8 +30,10 @@ public enum Attribute {
         INHERITED_PROPERTIES = new boolean[Attribute.values().length];
 
         INHERITED_PROPERTIES[COLOR.ordinal()] = true;
-        INHERITED_PROPERTIES[FONT.ordinal()] = true;
+        INHERITED_PROPERTIES[FONT_FAMILY.ordinal()] = true;
         INHERITED_PROPERTIES[FONT_SIZE.ordinal()] = true;
+        INHERITED_PROPERTIES[FONT_WEIGHT.ordinal()] = true;
+        INHERITED_PROPERTIES[FONT_STYLE.ordinal()] = true;
         INHERITED_PROPERTIES[LEADING.ordinal()] = true;
         INHERITED_PROPERTIES[TEXT_ALIGN.ordinal()] = true;
     }

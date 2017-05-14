@@ -43,6 +43,34 @@ public class UnitUtils {
         return unitValue;
     }
 
+    public static float[] unitArray(String value) {
+        String[] values = value.split(" ");
+        float[] unitValues = new float[values.length];
+
+        for (int i = 0; i < unitValues.length; i++) {
+            unitValues[i] = unit(values[i]);
+        }
+
+        return unitValues;
+    }
+
+    public static float[] unitArrayIndent(String value) {
+        float[] uv = unitArray(value);
+
+        switch (uv.length) {
+            case 4:
+                return uv;
+            case 3:
+                return new float[]{uv[0], uv[1], uv[2], uv[1]};
+            case 2:
+                return new float[]{uv[0], uv[1], uv[0], uv[1]};
+            case 1:
+                return new float[]{uv[0], uv[0], uv[0], uv[0]};
+            default:
+                return new float[]{0, 0, 0, 0};
+        }
+    }
+
     public static String pangram() {
         return PANGRAM_STR.substring(0, PANGRAM_STR.length());
     }

@@ -1,6 +1,8 @@
 package com.bunjlabs.pjdoc.xml.parser;
 
-import com.bunjlabs.pjdoc.font.Font;
+import com.bunjlabs.pjdoc.font.FontFamily;
+import com.bunjlabs.pjdoc.font.FontStyle;
+import com.bunjlabs.pjdoc.font.FontWeight;
 import com.bunjlabs.pjdoc.layout.attributes.Style;
 import com.bunjlabs.pjdoc.layout.attributes.TextAlign;
 import com.bunjlabs.pjdoc.layout.elements.Document;
@@ -39,12 +41,20 @@ public class ParserUtils {
                     style.setColor(Color.decode(attribute.getNodeValue()));
                     break;
                 }
-                case "font": {
-                    style.setFont(new Font(attribute.getNodeValue()));
+                case "font-family": {
+                    style.setFont(new FontFamily(attribute.getNodeValue()));
                     break;
                 }
                 case "font-size": {
                     style.setFontSize(Float.parseFloat(attribute.getNodeValue()));
+                    break;
+                }
+                case "font-style": {
+                    style.setFontStyle(FontStyle.valueOf(attribute.getNodeValue().toUpperCase()));
+                    break;
+                }
+                case "font-weight": {
+                    style.setFontWeight(FontWeight.valueOf(attribute.getNodeValue().toUpperCase()));
                     break;
                 }
                 case "text-align": {
@@ -63,6 +73,11 @@ public class ParserUtils {
                     style.setHeight(UnitUtils.unit(attribute.getNodeValue()));
                     break;
                 }
+                case "margin": {
+                    float[] indents = UnitUtils.unitArrayIndent(attribute.getNodeValue());
+                    style.setMargin(indents[0], indents[1], indents[2], indents[3]);
+                    break;
+                }
                 case "margin-top": {
                     style.setMarginTop(UnitUtils.unit(attribute.getNodeValue()));
                     break;
@@ -77,6 +92,11 @@ public class ParserUtils {
                 }
                 case "margin-left": {
                     style.setMarginLeft(UnitUtils.unit(attribute.getNodeValue()));
+                    break;
+                }
+                case "adding": {
+                    float[] indents = UnitUtils.unitArrayIndent(attribute.getNodeValue());
+                    style.setPadding(indents[0], indents[1], indents[2], indents[3]);
                     break;
                 }
                 case "padding-top": {
@@ -119,6 +139,33 @@ public class ParserUtils {
                 }
             }
         }
+    }
+
+    public static String parseContent(ContentParserContext contentParserContext, Node node) {
+
+        if (node.getNodeType() == Node.TEXT_NODE) {
+            return node.getTextContent();
+        }
+
+        String content;
+
+        Node contentNode = node.getAttributes().getNamedItem("content");
+
+        if (contentNode != null) {
+            content = contentNode.getNodeValue();
+        } else {
+            content = node.getTextContent();
+        }
+
+        if (content.startsWith("@")) {
+            content = contentParserContext.getParameter(content.substring(1));
+        }
+
+        if (content == null) {
+            content = "";
+        }
+
+        return content;
     }
 
 }

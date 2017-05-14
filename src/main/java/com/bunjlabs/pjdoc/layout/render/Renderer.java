@@ -36,7 +36,12 @@ public abstract class Renderer<E extends Element> implements IAttributeContainer
     public abstract LayoutResult layout(LayoutContext layoutContext);
 
     public void render(RenderContext renderContext) {
+        if (occupiedArea == null) {
+            return;
+        }
         Rectangle boundingBox = occupiedArea.getBoundingBox();
+
+        applyMargins(boundingBox);
 
         drawBackground(renderContext, boundingBox);
         drawBorder(renderContext, boundingBox);

@@ -2,6 +2,7 @@ package com.bunjlabs.pjdoc.xml.parser;
 
 import com.bunjlabs.pjdoc.layout.elements.BlockElement;
 import com.bunjlabs.pjdoc.layout.elements.Div;
+import com.bunjlabs.pjdoc.layout.elements.Document;
 import com.bunjlabs.pjdoc.layout.elements.Element;
 import com.bunjlabs.pjdoc.layout.elements.Flex;
 import com.bunjlabs.pjdoc.layout.elements.Image;
@@ -12,15 +13,18 @@ import com.bunjlabs.pjdoc.layout.elements.barcode.Code128;
 import com.bunjlabs.pjdoc.layout.elements.barcode.Code39;
 import com.bunjlabs.pjdoc.layout.elements.barcode.EAN13;
 import com.bunjlabs.pjdoc.layout.elements.barcode.PDF417;
+import com.bunjlabs.pjdoc.md.MarkdownWorker;
 import com.bunjlabs.pjdoc.xml.XmlParseException;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import org.apache.tools.ant.util.ReaderInputStream;
 import org.w3c.dom.Node;
 
 /**
@@ -42,10 +46,11 @@ public class ContentParser {
         map.put("flex", (c, n) -> ContentParser.this.parseFlex(c, n));
         map.put("p", (c, n) -> ContentParser.this.parseParagraph(c, n));
         map.put("t", (c, n) -> ContentParser.this.parseText(c, n));
-        map.put("", (c, n) -> ContentParser.this.parseText(c, n));
+        map.put("", (c, n) -> ContentParser.this.parseRawText(c, n));
         map.put("image", (c, n) -> ContentParser.this.parseImage(c, n));
         map.put("barcode", (c, n) -> ContentParser.this.parseBarcode(c, n));
         map.put("place-content", (c, n) -> ContentParser.this.parsePlaceContent(c, n));
+        map.put("worker-markdown", (c, n) -> ContentParser.this.parseWorkerMarkdown(c, n));
 
         return map;
     }
@@ -103,11 +108,17 @@ public class ContentParser {
     }
 
     private List<Element> parseText(ContentParserContext context, Node node) throws XmlParseException {
-        Text t = new Text(node.getTextContent());
+        String content = ParserUtils.parseContent(context, node);
+
+        Text t = new Text(content);
 
         ParserUtils.parseStyles(t, node.getAttributes());
 
         return Arrays.asList(t);
+    }
+
+    private List<Element> parseRawText(ContentParserContext context, Node node) throws XmlParseException {
+        return Collections.EMPTY_LIST;
     }
 
     private List<Element> parseImage(ContentParserContext context, Node node) throws XmlParseException {
@@ -131,12 +142,13 @@ public class ContentParser {
     private List<Element> parseBarcode(ContentParserContext context, Node node) throws XmlParseException {
         Barcode barcode = null;
 
-        Node typeNode = node.getAttributes().getNamedItem("type");
-        Node valueNode = node.getAttributes().getNamedItem("value");
+        String content = ParserUtils.parseContent(context, node);
 
-        if (typeNode != null && valueNode != null) {
+        Node typeNode = node.getAttributes().getNamedItem("type");
+
+        if (typeNode != null) {
             String type = typeNode.getNodeValue();
-            String value = valueNode.getNodeValue();
+            String value = content;
 
             try {
                 switch (type.toLowerCase()) {
@@ -169,15 +181,31 @@ public class ContentParser {
     }
 
     private List<Element> parsePlaceContent(ContentParserContext context, Node node) throws XmlParseException {
-        Node contentNode = node.getAttributes().getNamedItem("content");
+        Node contentNameNode = node.getAttributes().getNamedItem("name");
 
-        if (contentNode != null) {
-            String contentId = contentNode.getNodeValue();
+        if (contentNameNode != null) {
+            String contentId = contentNameNode.getNodeValue();
             List<Element> elements = context.getContents().get(contentId);
 
             if (elements != null) {
                 return elements;
             }
+        }
+
+        return Collections.EMPTY_LIST;
+    }
+
+    private List<Element> parseWorkerMarkdown(ContentParserContext context, Node node) throws XmlParseException {
+        String content = ParserUtils.parseContent(context, node);
+
+        try {
+            MarkdownWorker markdownWorker = new MarkdownWorker();
+
+            Document workDocument = markdownWorker.work(new ReaderInputStream(new StringReader(content)));
+
+            return workDocument.getChildren();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
 
         return Collections.EMPTY_LIST;

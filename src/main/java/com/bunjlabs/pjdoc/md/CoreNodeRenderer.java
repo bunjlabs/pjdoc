@@ -1,5 +1,7 @@
 package com.bunjlabs.pjdoc.md;
 
+import com.bunjlabs.pjdoc.font.FontStyle;
+import com.bunjlabs.pjdoc.font.FontWeight;
 import com.bunjlabs.pjdoc.layout.attributes.Style;
 import com.bunjlabs.pjdoc.layout.elements.Element;
 import com.vladsch.flexmark.ast.*;
@@ -47,6 +49,9 @@ public class CoreNodeRenderer {
                 }),
                 new NodeRenderingHandler<TextBase>(TextBase.class, (TextBase node, NodeRenderingContext context) -> {
                     CoreNodeRenderer.this.render(node, context);
+                }),
+                new NodeRenderingHandler<SoftLineBreak>(SoftLineBreak.class, (SoftLineBreak node, NodeRenderingContext context) -> {
+                    CoreNodeRenderer.this.render(node, context);
                 })
         ));
     }
@@ -66,7 +71,7 @@ public class CoreNodeRenderer {
     private void render(Heading node, NodeRenderingContext context) {
         com.bunjlabs.pjdoc.layout.elements.Paragraph p = new com.bunjlabs.pjdoc.layout.elements.Paragraph();
 
-        p.addStyle(new Style().setFontSize(32 - (node.getLevel() * 4)));
+        p.addStyle(new Style().setFontSize(24 - (node.getLevel() * 4)));
 
         context.setCurrentElement(p);
         context.renderChildren(node);
@@ -110,11 +115,11 @@ public class CoreNodeRenderer {
             com.bunjlabs.pjdoc.layout.elements.Text text = new com.bunjlabs.pjdoc.layout.elements.Text(node.getChars().unescape());
 
             if (node.getParent() instanceof Emphasis) {
-                text.addStyle(new Style());
+                text.addStyle(new Style().setFontStyle(FontStyle.ITALIC));
             }
 
             if (node.getParent() instanceof StrongEmphasis) {
-                text.addStyle(new Style());
+                text.addStyle(new Style().setFontWeight(FontWeight.BOLD));
             }
 
             p.add(text);
@@ -125,4 +130,7 @@ public class CoreNodeRenderer {
         context.renderChildren(node);
     }
 
+    private void render(SoftLineBreak node, NodeRenderingContext context) {
+
+    }
 }

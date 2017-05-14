@@ -1,6 +1,5 @@
 package com.bunjlabs.pjdoc.font;
 
-import java.io.IOException;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 
 /**
@@ -9,5 +8,5 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
  */
 public interface FontProvider {
 
-    public PDFont provide(String fontName) throws IOException;
+    public PDFont provide(FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight);
 }

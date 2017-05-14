@@ -1,8 +1,9 @@
 package com.bunjlabs.pjdoc.layout.attributes;
 
-import com.bunjlabs.pjdoc.font.Font;
+import com.bunjlabs.pjdoc.font.FontFamily;
+import com.bunjlabs.pjdoc.font.FontStyle;
+import com.bunjlabs.pjdoc.font.FontWeight;
 import java.awt.Color;
-import org.apache.pdfbox.pdmodel.font.PDFont;
 
 /**
  *
@@ -10,13 +11,23 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
  */
 public class Style extends ElementAttributeContainer<Style> {
 
-    public Style setFont(Font font) {
-        setAttribute(Attribute.FONT, font);
+    public Style setFont(FontFamily fontFamily) {
+        setAttribute(Attribute.FONT_FAMILY, fontFamily);
         return this;
     }
 
     public Style setFontSize(float fontSize) {
         setAttribute(Attribute.FONT_SIZE, fontSize);
+        return this;
+    }
+
+    public Style setFontStyle(FontStyle fontStyle) {
+        setAttribute(Attribute.FONT_STYLE, fontStyle);
+        return this;
+    }
+
+    public Style setFontWeight(FontWeight fontWeight) {
+        setAttribute(Attribute.FONT_WEIGHT, fontWeight);
         return this;
     }
 

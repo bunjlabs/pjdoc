@@ -2,6 +2,7 @@ package com.bunjlabs.pjdoc.xml.parser;
 
 import com.bunjlabs.pjdoc.layout.elements.Element;
 import com.bunjlabs.pjdoc.xml.XmlParseException;
+import java.util.Collections;
 import java.util.List;
 import org.w3c.dom.Node;
 
@@ -26,7 +27,7 @@ public class TemplateParser {
         ParserUtils.parseStyles(context.getDocument(), root.getAttributes());
 
         List<Element> templateContent = contentParser.parseContent(
-                new ContentParserContext("@template-" + context.getTemplateId(), context.getContents()), root);
+                new ContentParserContext("@template-" + context.getTemplateId(), Collections.EMPTY_MAP, context.getContents()), root);
 
         context.getContents().put("main", templateContent);
     }

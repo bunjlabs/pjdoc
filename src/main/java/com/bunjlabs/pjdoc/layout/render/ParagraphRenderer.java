@@ -62,6 +62,7 @@ public class ParagraphRenderer extends BlockRenderer<Paragraph> {
         }
 
         removePaddings(occupiedArea.getBoundingBox());
+        removeMargins(occupiedArea.getBoundingBox());
 
         return new LayoutResult(LayoutResult.FULL, occupiedArea);
     }
