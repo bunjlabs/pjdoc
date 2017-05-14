@@ -50,7 +50,7 @@ public class DocumentParser {
         if (templateNode != null) {
             String templateid = templateNode.getNodeValue();
             Node templateRoot = context.getTemplateProvider().provide(templateid);
-            templateParser.parseTemplate(new TemplateParserContext(contents, document, templateid), templateRoot);
+            templateParser.parseTemplate(new TemplateParserContext(contents, parameters, document, templateid), templateRoot);
         }
 
         ParserUtils.parseDocumentAttributes(document, node.getAttributes());

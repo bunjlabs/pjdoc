@@ -27,7 +27,7 @@ public class TemplateParser {
         ParserUtils.parseStyles(context.getDocument(), root.getAttributes());
 
         List<Element> templateContent = contentParser.parseContent(
-                new ContentParserContext("@template-" + context.getTemplateId(), Collections.EMPTY_MAP, context.getContents()), root);
+                new ContentParserContext("%template-" + context.getTemplateId(), context.getParameters(), context.getContents()), root);
 
         context.getContents().put("main", templateContent);
     }

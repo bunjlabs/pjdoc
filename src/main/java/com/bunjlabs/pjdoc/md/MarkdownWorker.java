@@ -21,6 +21,7 @@ public class MarkdownWorker {
 
     public MarkdownWorker() {
         MutableDataSet options = new MutableDataSet();
+        
         parser = Parser.builder(options).build();
     }
 

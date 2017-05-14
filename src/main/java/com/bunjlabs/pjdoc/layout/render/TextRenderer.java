@@ -46,7 +46,7 @@ public class TextRenderer extends Renderer<Text> {
         fontFamily = getAttribute(Attribute.FONT_FAMILY);
         fontSize = getAttribute(Attribute.FONT_SIZE, 14f);
         fontStyle = getAttribute(Attribute.FONT_STYLE, FontStyle.NORMAL);
-        fontWeight = getAttribute(Attribute.FONT_WEIGHT, FontWeight.NORMAL);
+        fontWeight = getAttribute(Attribute.FONT_WEIGHT, FontWeight.REGULAR);
         leading = getAttribute(Attribute.LEADING, 1.5f) * fontSize;
         textColor = getAttribute(Attribute.COLOR, Color.BLACK);
 

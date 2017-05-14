@@ -12,11 +12,13 @@ import java.util.Map;
 public class TemplateParserContext {
 
     private final Map<String, List<Element>> contents;
+    private final Map<String, String> parameters;
     private final Document document;
     private final String templateId;
 
-    TemplateParserContext(Map<String, List<Element>> contents, Document document, String templateId) {
+    TemplateParserContext(Map<String, List<Element>> contents, Map<String, String> parameters, Document document, String templateId) {
         this.contents = contents;
+        this.parameters = parameters;
         this.document = document;
         this.templateId = templateId;
     }
@@ -31,6 +33,10 @@ public class TemplateParserContext {
 
     public Document getDocument() {
         return document;
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
     }
 
 }

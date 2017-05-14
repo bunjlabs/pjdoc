@@ -6,11 +6,16 @@ package com.bunjlabs.pjdoc.font;
  */
 public enum FontWeight {
 
-    LIGHTER(100),
+    HAIRLINE(100),
+    THIN(200),
     LIGHT(300),
+    REGULAR(400),
     NORMAL(400),
+    MEDIUM(500),
+    SEMIBOLD(600),
     BOLD(700),
-    BOLDER(900);
+    HEAVY(800),
+    BLACK(900);
 
     private final int weight;
 
