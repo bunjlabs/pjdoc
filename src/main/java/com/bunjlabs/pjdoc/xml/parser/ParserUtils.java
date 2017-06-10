@@ -3,8 +3,10 @@ package com.bunjlabs.pjdoc.xml.parser;
 import com.bunjlabs.pjdoc.font.FontFamily;
 import com.bunjlabs.pjdoc.font.FontStyle;
 import com.bunjlabs.pjdoc.font.FontWeight;
+import com.bunjlabs.pjdoc.layout.attributes.HorizontalAlign;
 import com.bunjlabs.pjdoc.layout.attributes.Style;
 import com.bunjlabs.pjdoc.layout.attributes.TextAlign;
+import com.bunjlabs.pjdoc.layout.attributes.VerticalAlign;
 import com.bunjlabs.pjdoc.layout.elements.Document;
 import com.bunjlabs.pjdoc.layout.elements.RootElement;
 import com.bunjlabs.pjdoc.utils.RectangleUtils;
@@ -59,6 +61,14 @@ public class ParserUtils {
                 }
                 case "text-align": {
                     style.setTextAlign(TextAlign.valueOf(attribute.getNodeValue().toUpperCase()));
+                    break;
+                }
+                case "horizontal-align": {
+                    style.setHorizontalAlign(HorizontalAlign.valueOf(attribute.getNodeValue().toUpperCase()));
+                    break;
+                }
+                case "vertical-align": {
+                    style.setVerticalAlign(VerticalAlign.valueOf(attribute.getNodeValue().toUpperCase()));
                     break;
                 }
                 case "leading": {
@@ -135,6 +145,27 @@ public class ParserUtils {
             switch (attribute.getNodeName()) {
                 case "page-size": {
                     document.setPageSize(RectangleUtils.pageSize(attribute.getNodeValue()));
+                    break;
+                }
+                case "margin": {
+                    float[] indents = UnitUtils.unitArrayIndent(attribute.getNodeValue());
+                    document.setMargin(indents[0], indents[1], indents[2], indents[3]);
+                    break;
+                }
+                case "margin-top": {
+                    document.setMarginTop(UnitUtils.unit(attribute.getNodeValue()));
+                    break;
+                }
+                case "margin-right": {
+                    document.setMarginRight(UnitUtils.unit(attribute.getNodeValue()));
+                    break;
+                }
+                case "margin-bottom": {
+                    document.setMarginBottom(UnitUtils.unit(attribute.getNodeValue()));
+                    break;
+                }
+                case "margin-left": {
+                    document.setMarginLeft(UnitUtils.unit(attribute.getNodeValue()));
                     break;
                 }
             }

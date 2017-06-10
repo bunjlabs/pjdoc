@@ -4,6 +4,7 @@ target/
 *.pdf
 example-template.xml
 example.xml
+example2.xml
 
 src/main/java/com/bunjlabs/pjdoc/PjMain.java
 src/main/java/com/bunjlabs/pjdoc/FontRegisterer.java

@@ -13,6 +13,8 @@ public enum Attribute {
     FONT_STYLE,
     LEADING,
     TEXT_ALIGN,
+    HORIZONTAL_ALIGN,
+    VERTICAL_ALIGN,
     WIDTH,
     HEIGHT,
     MARGIN_TOP,

@@ -146,6 +146,18 @@ public class Rectangle {
         return this;
     }
 
+    public Rectangle copyHorizontalComponents(Rectangle rectangle) {
+        this.x = rectangle.x;
+        this.width = rectangle.width;
+        return this;
+    }
+
+    public Rectangle copyVerticalComponents(Rectangle rectangle) {
+        this.y = rectangle.y;
+        this.height = rectangle.height;
+        return this;
+    }
+
     public Rectangle applyIndents(float top, float right, float bottom, float left) {
         x += left;
         y += bottom;
@@ -163,30 +175,49 @@ public class Rectangle {
         return new Rectangle(this);
     }
 
-    public static Rectangle getCommonRectangle(Rectangle... rectangles) {
-        float ury = -Float.MAX_VALUE;
-        float llx = Float.MAX_VALUE;
-        float lly = Float.MAX_VALUE;
-        float urx = -Float.MAX_VALUE;
-        for (Rectangle rectangle : rectangles) {
-            if (rectangle == null) {
+    public Rectangle commonHorizontalRectangle(Rectangle... rectangles) {
+        float olx = this.x;
+        float orx = this.x + this.width;
+
+        for (Rectangle rec : rectangles) {
+            if (rec == null) {
                 continue;
             }
-            Rectangle rec = rectangle.clone();
-            if (rec.getY() < lly) {
-                lly = rec.getY();
+
+            if (rec.getX() < olx) {
+                olx = rec.getX();
             }
-            if (rec.getX() < llx) {
-                llx = rec.getX();
-            }
-            if (rec.getY() + rec.getHeight() > ury) {
-                ury = rec.getY() + rec.getHeight();
-            }
-            if (rec.getX() + rec.getWidth() > urx) {
-                urx = rec.getX() + rec.getWidth();
+            if (rec.getX() + rec.getWidth() > orx) {
+                orx = rec.getX() + rec.getWidth();
             }
         }
 
-        return new Rectangle(llx, lly, urx - llx, ury - lly);
+        this.x = olx;
+        this.width = orx - olx;
+
+        return this;
+    }
+
+    public Rectangle commonVerticalRectangle(Rectangle... rectangles) {
+        float oly = this.y;
+        float ory = this.y + this.height;
+
+        for (Rectangle rec : rectangles) {
+            if (rec == null) {
+                continue;
+            }
+
+            if (rec.getY() < oly) {
+                oly = rec.getY();
+            }
+            if (rec.getY() + rec.getHeight() > ory) {
+                ory = rec.getY() + rec.getHeight();
+            }
+        }
+
+        this.y = oly;
+        this.height = ory - oly;
+
+        return this;
     }
 }

@@ -2,6 +2,9 @@ package com.bunjlabs.pjdoc.layout.render;
 
 import com.bunjlabs.pjdoc.layout.LayoutArea;
 import com.bunjlabs.pjdoc.layout.Rectangle;
+import com.bunjlabs.pjdoc.layout.attributes.Attribute;
+import com.bunjlabs.pjdoc.layout.attributes.HorizontalAlign;
+import com.bunjlabs.pjdoc.layout.attributes.VerticalAlign;
 import com.bunjlabs.pjdoc.layout.elements.BlockElement;
 import java.util.Iterator;
 
@@ -26,6 +29,43 @@ public abstract class BlockRenderer<E extends BlockElement> extends Renderer<E> 
 
         Rectangle layoutBox = boundingBox.clone();
 
+        float fullWidth = layoutBox.getWidth();
+        float fullHeigth = layoutBox.getHeight();
+
+        if (hasAttribute(Attribute.WIDTH)) {
+            float fixedWidth = getAttribute(Attribute.WIDTH);
+            float freeWidth = fullWidth - fixedWidth;
+
+            HorizontalAlign horizontalAlign = getAttribute(Attribute.HORIZONTAL_ALIGN, HorizontalAlign.LEFT);
+
+            layoutBox.setWidth(fixedWidth);
+
+            if (horizontalAlign == HorizontalAlign.CENTER) {
+                layoutBox.moveX(freeWidth / 2);
+            } else if (horizontalAlign == HorizontalAlign.RIGHT) {
+                layoutBox.moveX(freeWidth);
+            }
+
+            occupiedArea.getBoundingBox().copyHorizontalComponents(layoutBox);
+        }
+
+        if (hasAttribute(Attribute.HEIGHT)) {
+            float fixedHeight = getAttribute(Attribute.HEIGHT);
+            float freeHeight = fullHeigth - fixedHeight;
+
+            VerticalAlign verticalAlign = getAttribute(Attribute.VERTICAL_ALIGN, VerticalAlign.Top);
+
+            layoutBox.addBottom(-freeHeight);
+
+            if (verticalAlign == VerticalAlign.MIDDLE) {
+                layoutBox.moveY(-freeHeight / 2);
+            } else if (verticalAlign == VerticalAlign.BOTTOM) {
+                layoutBox.moveY(-freeHeight);
+            }
+
+            occupiedArea.getBoundingBox().copyVerticalComponents(layoutBox);
+        }
+
         int currentChild = 0;
 
         for (Iterator<Renderer> it = childRenderers.iterator(); it.hasNext(); currentChild++) {
@@ -48,10 +88,15 @@ public abstract class BlockRenderer<E extends BlockElement> extends Renderer<E> 
                 }
             }
 
-            occupiedArea.setBoundingBox(Rectangle.getCommonRectangle(occupiedArea.getBoundingBox(), layoutResult.getOccupiedArea().getBoundingBox()));
+            if (!hasAttribute(Attribute.WIDTH)) {
+                occupiedArea.getBoundingBox().commonHorizontalRectangle(layoutResult.getOccupiedArea().getBoundingBox());
+            }
+
+            if (!hasAttribute(Attribute.HEIGHT)) {
+                occupiedArea.getBoundingBox().commonVerticalRectangle(layoutResult.getOccupiedArea().getBoundingBox());
+            }
 
             if (layoutResult.getType() == LayoutResult.FULL) {
-
                 layoutBox.addHeight(-layoutResult.getOccupiedArea().getBoundingBox().getHeight());
             }
         }

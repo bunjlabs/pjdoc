@@ -51,6 +51,16 @@ public class Style extends ElementAttributeContainer<Style> {
         return this;
     }
 
+    public Style setHorizontalAlign(HorizontalAlign horizontalAlign) {
+        setAttribute(Attribute.HORIZONTAL_ALIGN, horizontalAlign);
+        return this;
+    }
+
+    public Style setVerticalAlign(VerticalAlign verticalAlign) {
+        setAttribute(Attribute.VERTICAL_ALIGN, verticalAlign);
+        return this;
+    }
+
     public Style setWidth(float width) {
         setAttribute(Attribute.WIDTH, width);
         return this;

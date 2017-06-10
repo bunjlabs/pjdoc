@@ -3,6 +3,7 @@ package com.bunjlabs.pjdoc.layout.render;
 import com.bunjlabs.pjdoc.layout.LayoutArea;
 import com.bunjlabs.pjdoc.layout.Rectangle;
 import com.bunjlabs.pjdoc.layout.attributes.Attribute;
+import com.bunjlabs.pjdoc.layout.attributes.HorizontalAlign;
 import com.bunjlabs.pjdoc.layout.elements.Image;
 import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -53,7 +54,16 @@ public class ImageRenderer extends Renderer<Image> {
             heigth = width / aspectRatio;
         }
 
+        float freeWidth = boundingBox.getWidth() - width;
         occupiedArea.getBoundingBox().addRight(width).addBottom(heigth);
+
+        HorizontalAlign horizontalAlign = getAttribute(Attribute.HORIZONTAL_ALIGN, HorizontalAlign.LEFT);
+
+        if (horizontalAlign == HorizontalAlign.CENTER) {
+            occupiedArea.getBoundingBox().moveX(freeWidth / 2);
+        } else if (horizontalAlign == HorizontalAlign.RIGHT) {
+            occupiedArea.getBoundingBox().moveX(freeWidth);
+        }
 
         return new LayoutResult(LayoutResult.FULL, occupiedArea);
     }
