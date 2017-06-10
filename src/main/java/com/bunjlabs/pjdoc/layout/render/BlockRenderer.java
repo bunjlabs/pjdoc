@@ -53,7 +53,7 @@ public abstract class BlockRenderer<E extends BlockElement> extends Renderer<E> 
             float fixedHeight = getAttribute(Attribute.HEIGHT);
             float freeHeight = fullHeigth - fixedHeight;
 
-            VerticalAlign verticalAlign = getAttribute(Attribute.VERTICAL_ALIGN, VerticalAlign.Top);
+            VerticalAlign verticalAlign = getAttribute(Attribute.VERTICAL_ALIGN, VerticalAlign.TOP);
 
             layoutBox.addBottom(-freeHeight);
 

@@ -4,6 +4,7 @@ import com.bunjlabs.pjdoc.layout.LayoutArea;
 import com.bunjlabs.pjdoc.layout.Rectangle;
 import com.bunjlabs.pjdoc.layout.attributes.Attribute;
 import com.bunjlabs.pjdoc.layout.attributes.HorizontalAlign;
+import com.bunjlabs.pjdoc.layout.attributes.VerticalAlign;
 import com.bunjlabs.pjdoc.layout.elements.Image;
 import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -26,8 +27,6 @@ public class ImageRenderer extends Renderer<Image> {
 
     @Override
     public LayoutResult layout(LayoutContext layoutContext) {
-        Rectangle parentBoundingBox = layoutContext.getBoundingBox();
-
         Rectangle boundingBox = layoutContext.getBoundingBox();
 
         occupiedArea = new LayoutArea(layoutContext.getMediaArea().getPageNumber(), new Rectangle(boundingBox.getLeft(), boundingBox.getTop(), 0, 0));
@@ -55,6 +54,8 @@ public class ImageRenderer extends Renderer<Image> {
         }
 
         float freeWidth = boundingBox.getWidth() - width;
+        float freeHeight = boundingBox.getHeight() - heigth;
+
         occupiedArea.getBoundingBox().addRight(width).addBottom(heigth);
 
         HorizontalAlign horizontalAlign = getAttribute(Attribute.HORIZONTAL_ALIGN, HorizontalAlign.LEFT);
@@ -63,6 +64,14 @@ public class ImageRenderer extends Renderer<Image> {
             occupiedArea.getBoundingBox().moveX(freeWidth / 2);
         } else if (horizontalAlign == HorizontalAlign.RIGHT) {
             occupiedArea.getBoundingBox().moveX(freeWidth);
+        }
+
+        VerticalAlign verticalAlign = getAttribute(Attribute.VERTICAL_ALIGN, VerticalAlign.TOP);
+
+        if (verticalAlign == VerticalAlign.MIDDLE) {
+            occupiedArea.getBoundingBox().moveY(-freeHeight / 2);
+        } else if (verticalAlign == VerticalAlign.BOTTOM) {
+            occupiedArea.getBoundingBox().moveY(-freeHeight);
         }
 
         return new LayoutResult(LayoutResult.FULL, occupiedArea);

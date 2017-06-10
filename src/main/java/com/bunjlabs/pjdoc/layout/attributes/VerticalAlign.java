@@ -5,7 +5,7 @@ package com.bunjlabs.pjdoc.layout.attributes;
  * @author Artem Shurygin <artem.shurygin@bunjlabs.com>
  */
 public enum VerticalAlign {
-    Top,
+    TOP,
     MIDDLE,
     BOTTOM
 }
