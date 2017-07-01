@@ -1,8 +1,8 @@
 package com.bunjlabs.pjdoc.layout.render;
 
+import com.bunjlabs.pjdoc.layout.PjContentStream;
 import java.util.List;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 /**
  *
@@ -11,15 +11,15 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 public class RenderContext {
 
     private final PDDocument pDDocument;
-    private final List<PDPageContentStream> pageContentStreams;
+    private final List<PjContentStream> contentStreams;
 
-    public RenderContext(PDDocument pDDocument, List<PDPageContentStream> pageContentStreams) {
+    public RenderContext(PDDocument pDDocument, List<PjContentStream> contentStreams) {
         this.pDDocument = pDDocument;
-        this.pageContentStreams = pageContentStreams;
+        this.contentStreams = contentStreams;
     }
 
-    public PDPageContentStream getPageContentStream(int pageNumber) {
-        return pageContentStreams.get(pageNumber);
+    public PjContentStream getPageContentStream(int pageNumber) {
+        return contentStreams.get(pageNumber);
     }
 
     public PDDocument getPDDocument() {

@@ -100,26 +100,22 @@ public class TextRenderer extends Renderer<Text> {
     }
 
     @Override
-    public void render(RenderContext renderContext) {
-        PDPageContentStream stream = renderContext.getPageContentStream(occupiedArea.getPageNumber());
+    public void render(RenderContext renderContext) throws IOException {
+        PDPageContentStream stream = renderContext.getPageContentStream(occupiedArea.getPageNumber()).getPDPageContentStream();
 
         float startX = occupiedArea.getBoundingBox().getLeft();
         float startY = occupiedArea.getBoundingBox().getBottom();
 
-        try {
-            stream.beginText();
-            stream.setRenderingMode(RenderingMode.FILL);
-            stream.setFont(pdfont, fontSize);
-            stream.setNonStrokingColor(textColor);
-            stream.newLineAtOffset(startX, startY);
+        stream.beginText();
+        stream.setRenderingMode(RenderingMode.FILL);
+        stream.setFont(pdfont, fontSize);
+        stream.setNonStrokingColor(textColor);
+        stream.newLineAtOffset(startX, startY);
 
-            stream.showText(placedText);
+        stream.showText(placedText);
 
-            stream.endText();
-            stream.restoreGraphicsState();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        stream.endText();
+        stream.restoreGraphicsState();
     }
 
     public void setText(String text) {

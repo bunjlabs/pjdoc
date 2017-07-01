@@ -11,6 +11,50 @@ import java.awt.Color;
  */
 public class Style extends ElementAttributeContainer<Style> {
 
+    public Style setBorder(Border border) {
+        setAttribute(Attribute.BORDER_TOP, border);
+        setAttribute(Attribute.BORDER_RIGHT, border);
+        setAttribute(Attribute.BORDER_BOTTOM, border);
+        setAttribute(Attribute.BORDER_LEFT, border);
+        return this;
+    }
+
+    public Style setBorder(Border topBottom, Border leftRight) {
+        setAttribute(Attribute.BORDER_TOP, topBottom);
+        setAttribute(Attribute.BORDER_RIGHT, leftRight);
+        setAttribute(Attribute.BORDER_BOTTOM, topBottom);
+        setAttribute(Attribute.BORDER_LEFT, leftRight);
+        return this;
+    }
+
+    public Style setBorder(Border top, Border right, Border bottom, Border left) {
+        setAttribute(Attribute.BORDER_TOP, top);
+        setAttribute(Attribute.BORDER_RIGHT, right);
+        setAttribute(Attribute.BORDER_BOTTOM, bottom);
+        setAttribute(Attribute.BORDER_LEFT, left);
+        return this;
+    }
+
+    public Style setBorderTop(Border border) {
+        setAttribute(Attribute.BORDER_TOP, border);
+        return this;
+    }
+
+    public Style setBorderRight(Border border) {
+        setAttribute(Attribute.BORDER_RIGHT, border);
+        return this;
+    }
+
+    public Style setBorderBottom(Border border) {
+        setAttribute(Attribute.BORDER_BOTTOM, border);
+        return this;
+    }
+
+    public Style setBorderLeft(Border border) {
+        setAttribute(Attribute.BORDER_LEFT, border);
+        return this;
+    }
+
     public Style setFont(FontFamily fontFamily) {
         setAttribute(Attribute.FONT_FAMILY, fontFamily);
         return this;

@@ -1,15 +1,16 @@
 package com.bunjlabs.pjdoc.layout.render;
 
 import com.bunjlabs.pjdoc.layout.LayoutArea;
+import com.bunjlabs.pjdoc.layout.PjContentStream;
 import com.bunjlabs.pjdoc.layout.Rectangle;
 import com.bunjlabs.pjdoc.layout.attributes.Attribute;
+import com.bunjlabs.pjdoc.layout.attributes.Border;
 import com.bunjlabs.pjdoc.layout.attributes.IAttributeContainer;
 import com.bunjlabs.pjdoc.layout.elements.Element;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 /**
  *
@@ -35,7 +36,7 @@ public abstract class Renderer<E extends Element> implements IAttributeContainer
 
     public abstract LayoutResult layout(LayoutContext layoutContext);
 
-    public void render(RenderContext renderContext) {
+    public void render(RenderContext renderContext) throws IOException {
         if (occupiedArea == null) {
             return;
         }
@@ -52,7 +53,7 @@ public abstract class Renderer<E extends Element> implements IAttributeContainer
 
     }
 
-    public void renderChildren(RenderContext renderContext) {
+    public void renderChildren(RenderContext renderContext) throws IOException {
         for (Renderer renderer : childRenderers) {
             renderer.render(renderContext);
         }
@@ -103,6 +104,16 @@ public abstract class Renderer<E extends Element> implements IAttributeContainer
         boundingBox.applyIndents(paddingTop, paddingRight, paddingBottom, paddingLeft);
     }
 
+    protected void applyBorderBox(Rectangle boundingBox) {
+        Border[] borders = getBorders();
+        float topWidth = borders[0] != null ? borders[0].getWidth() : 0;
+        float rightWidth = borders[1] != null ? borders[1].getWidth() : 0;
+        float bottomWidth = borders[2] != null ? borders[2].getWidth() : 0;
+        float leftWidth = borders[3] != null ? borders[3].getWidth() : 0;
+
+        boundingBox.applyIndents(topWidth / 2f, rightWidth / 2f, bottomWidth / 2f, leftWidth / 2f);
+    }
+
     protected void removeMargins(Rectangle boundingBox) {
         float marginTop = getAttribute(Attribute.MARGIN_TOP, 0f);
         float marginRight = getAttribute(Attribute.MARGIN_RIGHT, 0f);
@@ -121,25 +132,50 @@ public abstract class Renderer<E extends Element> implements IAttributeContainer
         boundingBox.applyIndents(-paddingTop, -paddingRight, -paddingBottom, -paddingLeft);
     }
 
-    protected void drawBackground(RenderContext renderContext, Rectangle boundingBox) {
-        PDPageContentStream stream = renderContext.getPageContentStream(occupiedArea.getPageNumber());
+    protected void drawBackground(RenderContext renderContext, Rectangle boundingBox) throws IOException {
+        PjContentStream stream = renderContext.getPageContentStream(occupiedArea.getPageNumber());
         Color backgroundColor = getAttribute(Attribute.BACKGROUND_COLOR);
 
         if (backgroundColor == null) {
             return;
         }
 
-        try {
-            stream.setStrokingColor(backgroundColor);
-            stream.setNonStrokingColor(backgroundColor);
-            stream.addRect(boundingBox.getX(), boundingBox.getY(), boundingBox.getWidth(), boundingBox.getHeight());
-            stream.fill();
-            stream.restoreGraphicsState();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        stream.drawRectFilled(backgroundColor, boundingBox);
+
+    }
+
+    protected void drawBorder(RenderContext renderContext, Rectangle boundingBox) throws IOException {
+        PjContentStream stream = renderContext.getPageContentStream(occupiedArea.getPageNumber());
+        Border[] borders = getBorders();
+
+        Rectangle borderBox = occupiedArea.getBoundingBox().clone();
+        applyBorderBox(borderBox);
+
+        float x1 = borderBox.getX();
+        float y1 = borderBox.getY();
+        float x2 = borderBox.getX() + borderBox.getWidth();
+        float y2 = borderBox.getY() + borderBox.getHeight();
+
+        if (borders[0] != null) {
+            stream.drawLineStroked(borders[0].getColor(), borders[0].getLineStyle(), x1, y2, x2, y2, borders[0].getWidth());
+        }
+        if (borders[1] != null) {
+            stream.drawLineStroked(borders[0].getColor(), borders[0].getLineStyle(), x2, y2, x2, y1, borders[0].getWidth());
+        }
+        if (borders[2] != null) {
+            stream.drawLineStroked(borders[0].getColor(), borders[0].getLineStyle(), x1, y1, x2, y1, borders[0].getWidth());
+        }
+        if (borders[3] != null) {
+            stream.drawLineStroked(borders[0].getColor(), borders[0].getLineStyle(), x1, y1, x1, y2, borders[0].getWidth());
         }
     }
 
-    protected void drawBorder(RenderContext renderContext, Rectangle boundingBox) {
+    protected Border[] getBorders() {
+        Border topBorder = getAttribute(Attribute.BORDER_TOP, null);
+        Border rightBorder = getAttribute(Attribute.BORDER_RIGHT, null);
+        Border bottomBorder = getAttribute(Attribute.BORDER_BOTTOM, null);
+        Border leftBorder = getAttribute(Attribute.BORDER_LEFT, null);
+
+        return new Border[]{topBorder, rightBorder, bottomBorder, leftBorder};
     }
 }

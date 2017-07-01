@@ -3,13 +3,16 @@ package com.bunjlabs.pjdoc.xml.parser;
 import com.bunjlabs.pjdoc.font.FontFamily;
 import com.bunjlabs.pjdoc.font.FontStyle;
 import com.bunjlabs.pjdoc.font.FontWeight;
+import com.bunjlabs.pjdoc.layout.attributes.Border;
 import com.bunjlabs.pjdoc.layout.attributes.HorizontalAlign;
+import com.bunjlabs.pjdoc.layout.attributes.LineStyle;
 import com.bunjlabs.pjdoc.layout.attributes.Style;
 import com.bunjlabs.pjdoc.layout.attributes.TextAlign;
 import com.bunjlabs.pjdoc.layout.attributes.VerticalAlign;
 import com.bunjlabs.pjdoc.layout.elements.Document;
 import com.bunjlabs.pjdoc.layout.elements.RootElement;
 import com.bunjlabs.pjdoc.utils.RectangleUtils;
+import com.bunjlabs.pjdoc.utils.StyleUtils;
 import com.bunjlabs.pjdoc.utils.UnitUtils;
 import java.awt.Color;
 import org.w3c.dom.NamedNodeMap;
@@ -37,6 +40,26 @@ public class ParserUtils {
             switch (attribute.getNodeName()) {
                 case "background-color": {
                     style.setBackgroundColor(Color.decode(attribute.getNodeValue()));
+                    break;
+                }
+                case "border": {
+                    style.setBorder(StyleUtils.border(attribute.getNodeValue()));
+                    break;
+                }
+                case "border-top": {
+                    style.setBorderTop(StyleUtils.border(attribute.getNodeValue()));
+                    break;
+                }
+                case "border-right": {
+                    style.setBorderRight(StyleUtils.border(attribute.getNodeValue()));
+                    break;
+                }
+                case "border-bottom": {
+                    style.setBorderBottom(StyleUtils.border(attribute.getNodeValue()));
+                    break;
+                }
+                case "border-left": {
+                    style.setBorderLeft(StyleUtils.border(attribute.getNodeValue()));
                     break;
                 }
                 case "color": {
@@ -76,53 +99,53 @@ public class ParserUtils {
                     break;
                 }
                 case "width": {
-                    style.setWidth(UnitUtils.unit(attribute.getNodeValue()));
+                    style.setWidth(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
                 case "height": {
-                    style.setHeight(UnitUtils.unit(attribute.getNodeValue()));
+                    style.setHeight(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
                 case "margin": {
-                    float[] indents = UnitUtils.unitArrayIndent(attribute.getNodeValue());
+                    float[] indents = StyleUtils.unitArrayIndent(attribute.getNodeValue());
                     style.setMargin(indents[0], indents[1], indents[2], indents[3]);
                     break;
                 }
                 case "margin-top": {
-                    style.setMarginTop(UnitUtils.unit(attribute.getNodeValue()));
+                    style.setMarginTop(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
                 case "margin-right": {
-                    style.setMarginRight(UnitUtils.unit(attribute.getNodeValue()));
+                    style.setMarginRight(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
                 case "margin-bottom": {
-                    style.setMarginBottom(UnitUtils.unit(attribute.getNodeValue()));
+                    style.setMarginBottom(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
                 case "margin-left": {
-                    style.setMarginLeft(UnitUtils.unit(attribute.getNodeValue()));
+                    style.setMarginLeft(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
                 case "adding": {
-                    float[] indents = UnitUtils.unitArrayIndent(attribute.getNodeValue());
+                    float[] indents = StyleUtils.unitArrayIndent(attribute.getNodeValue());
                     style.setPadding(indents[0], indents[1], indents[2], indents[3]);
                     break;
                 }
                 case "padding-top": {
-                    style.setPaddingTop(UnitUtils.unit(attribute.getNodeValue()));
+                    style.setPaddingTop(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
                 case "padding-right": {
-                    style.setPaddingRight(UnitUtils.unit(attribute.getNodeValue()));
+                    style.setPaddingRight(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
                 case "padding-bottom": {
-                    style.setPaddingBottom(UnitUtils.unit(attribute.getNodeValue()));
+                    style.setPaddingBottom(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
                 case "padding-left": {
-                    style.setPaddingLeft(UnitUtils.unit(attribute.getNodeValue()));
+                    style.setPaddingLeft(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
             }
@@ -148,24 +171,24 @@ public class ParserUtils {
                     break;
                 }
                 case "margin": {
-                    float[] indents = UnitUtils.unitArrayIndent(attribute.getNodeValue());
+                    float[] indents = StyleUtils.unitArrayIndent(attribute.getNodeValue());
                     document.setMargin(indents[0], indents[1], indents[2], indents[3]);
                     break;
                 }
                 case "margin-top": {
-                    document.setMarginTop(UnitUtils.unit(attribute.getNodeValue()));
+                    document.setMarginTop(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
                 case "margin-right": {
-                    document.setMarginRight(UnitUtils.unit(attribute.getNodeValue()));
+                    document.setMarginRight(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
                 case "margin-bottom": {
-                    document.setMarginBottom(UnitUtils.unit(attribute.getNodeValue()));
+                    document.setMarginBottom(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
                 case "margin-left": {
-                    document.setMarginLeft(UnitUtils.unit(attribute.getNodeValue()));
+                    document.setMarginLeft(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
             }

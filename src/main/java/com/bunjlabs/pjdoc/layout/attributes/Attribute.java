@@ -7,6 +7,10 @@ package com.bunjlabs.pjdoc.layout.attributes;
 public enum Attribute {
     COLOR,
     BACKGROUND_COLOR,
+    BORDER_TOP,
+    BORDER_RIGHT,
+    BORDER_BOTTOM,
+    BORDER_LEFT,
     FONT_FAMILY,
     FONT_SIZE,
     FONT_WEIGHT,

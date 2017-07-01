@@ -3,6 +3,7 @@ package com.bunjlabs.pjdoc.layout.render;
 import com.bunjlabs.pjdoc.font.DefaultFontProvider;
 import com.bunjlabs.pjdoc.font.FontProvider;
 import com.bunjlabs.pjdoc.layout.LayoutArea;
+import com.bunjlabs.pjdoc.layout.PjContentStream;
 import com.bunjlabs.pjdoc.layout.Rectangle;
 import com.bunjlabs.pjdoc.layout.elements.Document;
 import java.io.IOException;
@@ -19,7 +20,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 public class DocumentRenderer {
 
     private final LinkedList<PDPage> pages = new LinkedList<>();
-    private final LinkedList<PDPageContentStream> pagesContentStream = new LinkedList<>();
+    private final LinkedList<PjContentStream> pagesContentStream = new LinkedList<>();
 
     private final List<Renderer> childRenderers = new LinkedList<>();
 
@@ -77,8 +78,8 @@ public class DocumentRenderer {
             renderer.render(renderContext);
         }
 
-        for (PDPageContentStream contentStream : pagesContentStream) {
-            contentStream.close();
+        for (PjContentStream contentStream : pagesContentStream) {
+            contentStream.getPDPageContentStream().close();
         }
 
         for (PDPage page : pages) {
@@ -96,7 +97,7 @@ public class DocumentRenderer {
             PDPageContentStream pageContentStream = new PDPageContentStream(pDDocument, page, PDPageContentStream.AppendMode.APPEND, true);
 
             pages.add(page);
-            pagesContentStream.add(pageContentStream);
+            pagesContentStream.add(new PjContentStream(pageContentStream));
         }
     }
 

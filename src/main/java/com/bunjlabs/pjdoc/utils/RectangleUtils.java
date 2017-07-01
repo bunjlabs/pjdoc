@@ -42,7 +42,7 @@ public class RectangleUtils {
 
         Scanner s = new Scanner(value);
 
-        PDRectangle page = new PDRectangle(UnitUtils.unit(s.next()), UnitUtils.unit(s.next()));
+        PDRectangle page = new PDRectangle(StyleUtils.unit(s.next()), StyleUtils.unit(s.next()));
 
         s.close();
 

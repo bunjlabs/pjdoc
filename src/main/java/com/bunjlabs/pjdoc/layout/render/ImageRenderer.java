@@ -78,15 +78,11 @@ public class ImageRenderer extends Renderer<Image> {
     }
 
     @Override
-    public void render(RenderContext renderContext) {
-        try {
-            PDPageContentStream stream = renderContext.getPageContentStream(occupiedArea.getPageNumber());
-            Rectangle boundingBox = occupiedArea.getBoundingBox();
+    public void render(RenderContext renderContext) throws IOException {
+        PDPageContentStream stream = renderContext.getPageContentStream(occupiedArea.getPageNumber()).getPDPageContentStream();
+        Rectangle boundingBox = occupiedArea.getBoundingBox();
 
-            stream.drawImage(image, boundingBox.getLeft(), boundingBox.getBottom(), boundingBox.getWidth(), boundingBox.getHeight());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        stream.drawImage(image, boundingBox.getLeft(), boundingBox.getBottom(), boundingBox.getWidth(), boundingBox.getHeight());
     }
 
     @Override
