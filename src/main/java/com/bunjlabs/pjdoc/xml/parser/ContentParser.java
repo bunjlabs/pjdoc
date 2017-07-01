@@ -7,6 +7,9 @@ import com.bunjlabs.pjdoc.layout.elements.Element;
 import com.bunjlabs.pjdoc.layout.elements.Flex;
 import com.bunjlabs.pjdoc.layout.elements.Image;
 import com.bunjlabs.pjdoc.layout.elements.Paragraph;
+import com.bunjlabs.pjdoc.layout.elements.Table;
+import com.bunjlabs.pjdoc.layout.elements.TableData;
+import com.bunjlabs.pjdoc.layout.elements.TableRow;
 import com.bunjlabs.pjdoc.layout.elements.Text;
 import com.bunjlabs.pjdoc.layout.elements.barcode.Barcode;
 import com.bunjlabs.pjdoc.layout.elements.barcode.Code128;
@@ -46,6 +49,9 @@ public class ContentParser {
         map.put("flex", (c, n) -> ContentParser.this.parseFlex(c, n));
         map.put("p", (c, n) -> ContentParser.this.parseParagraph(c, n));
         map.put("t", (c, n) -> ContentParser.this.parseText(c, n));
+        map.put("table", (c, n) -> ContentParser.this.parseTable(c, n));
+        map.put("tr", (c, n) -> ContentParser.this.parseTableRow(c, n));
+        map.put("td", (c, n) -> ContentParser.this.parseTableData(c, n));
         map.put("", (c, n) -> ContentParser.this.parseRawText(c, n));
         map.put("image", (c, n) -> ContentParser.this.parseImage(c, n));
         map.put("barcode", (c, n) -> ContentParser.this.parseBarcode(c, n));
@@ -118,7 +124,65 @@ public class ContentParser {
     }
 
     private List<Element> parseRawText(ContentParserContext context, Node node) throws XmlParseException {
-        return Collections.EMPTY_LIST;
+        String content = node.getTextContent().trim();
+
+        if (content.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        }
+
+        content = content.replaceAll("\\n|\\r", "");
+
+        Text t = new Text(content);
+
+        return Arrays.asList(t);
+    }
+
+    private List<Element> parseTable(ContentParserContext context, Node node) throws XmlParseException {
+        Table t = new Table();
+
+        ParserUtils.parseStyles(t, node.getAttributes());
+
+        List<Element> elements = context.parseChildren(tagParserAdapters, node);
+
+        elements.forEach((e) -> {
+            if (e instanceof TableRow) {
+                t.add((TableRow) e);
+            }
+        });
+
+        return Arrays.asList(t);
+    }
+
+    private List<Element> parseTableRow(ContentParserContext context, Node node) throws XmlParseException {
+        TableRow tr = new TableRow();
+
+        ParserUtils.parseStyles(tr, node.getAttributes());
+
+        List<Element> elements = context.parseChildren(tagParserAdapters, node);
+
+        elements.forEach((e) -> {
+            if (e instanceof TableData) {
+                tr.add((TableData) e);
+            }
+        });
+
+        return Arrays.asList(tr);
+    }
+
+    private List<Element> parseTableData(ContentParserContext context, Node node) throws XmlParseException {
+        TableData td = new TableData();
+
+        ParserUtils.parseStyles(td, node.getAttributes());
+
+        List<Element> elements = context.parseChildren(tagParserAdapters, node);
+
+        elements.forEach((e) -> {
+            if (e instanceof BlockElement) {
+                td.add((BlockElement) e);
+            }
+        });
+
+        return Arrays.asList(td);
     }
 
     private List<Element> parseImage(ContentParserContext context, Node node) throws XmlParseException {

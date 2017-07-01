@@ -11,8 +11,9 @@ public class Code39 extends Barcode {
 
     public Code39(String data) throws IOException {
         Code39Bean bean = new Code39Bean();
-        bean.setBarHeight(4);
-        bean.setFontSize(2);
+        bean.setBarHeight(3);
+        bean.setFontSize(0);
+        bean.setQuietZone(0);
         createBarcodeImage(bean, data);
     }
 }

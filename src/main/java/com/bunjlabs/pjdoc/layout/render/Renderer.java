@@ -149,7 +149,7 @@ public abstract class Renderer<E extends Element> implements IAttributeContainer
         Border[] borders = getBorders();
 
         Rectangle borderBox = occupiedArea.getBoundingBox().clone();
-        applyBorderBox(borderBox);
+        //applyBorderBox(borderBox);
 
         float x1 = borderBox.getX();
         float y1 = borderBox.getY();

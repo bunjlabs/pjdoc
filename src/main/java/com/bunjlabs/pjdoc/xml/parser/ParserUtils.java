@@ -127,7 +127,7 @@ public class ParserUtils {
                     style.setMarginLeft(StyleUtils.unit(attribute.getNodeValue()));
                     break;
                 }
-                case "adding": {
+                case "padding": {
                     float[] indents = StyleUtils.unitArrayIndent(attribute.getNodeValue());
                     style.setPadding(indents[0], indents[1], indents[2], indents[3]);
                     break;

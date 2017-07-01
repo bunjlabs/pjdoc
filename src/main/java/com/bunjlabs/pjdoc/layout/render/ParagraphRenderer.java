@@ -3,6 +3,7 @@ package com.bunjlabs.pjdoc.layout.render;
 import com.bunjlabs.pjdoc.layout.LayoutArea;
 import com.bunjlabs.pjdoc.layout.Rectangle;
 import com.bunjlabs.pjdoc.layout.elements.Paragraph;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,7 +69,7 @@ public class ParagraphRenderer extends BlockRenderer<Paragraph> {
     }
 
     @Override
-    public void renderChildren(RenderContext renderContext) {
+    public void renderChildren(RenderContext renderContext) throws IOException {
         for (Renderer renderer : lines) {
             renderer.render(renderContext);
         }

@@ -9,6 +9,8 @@ import com.bunjlabs.pjdoc.layout.attributes.Attribute;
 import com.bunjlabs.pjdoc.layout.elements.Text;
 import java.awt.Color;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
@@ -47,10 +49,13 @@ public class TextRenderer extends Renderer<Text> {
         fontSize = getAttribute(Attribute.FONT_SIZE, 14f);
         fontStyle = getAttribute(Attribute.FONT_STYLE, FontStyle.NORMAL);
         fontWeight = getAttribute(Attribute.FONT_WEIGHT, FontWeight.REGULAR);
-        leading = getAttribute(Attribute.LEADING, 1.5f) * fontSize;
-        textColor = getAttribute(Attribute.COLOR, Color.BLACK);
 
         pdfont = layoutContext.getDocumentRenderer().getFontProvider().provide(fontFamily, fontStyle, fontWeight);
+        float descent = pdfont.getFontDescriptor().getDescent();
+
+        leading = getAttribute(Attribute.LEADING, 1.5f) * fontSize - fontSize * descent / 1000f;
+
+        textColor = getAttribute(Attribute.COLOR, Color.BLACK);
 
         text = text.replace("\n", "").replace("\r", "");
 
