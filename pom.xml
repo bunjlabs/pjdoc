@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.bunjlabs.pjdoc</groupId>
     <artifactId>pjdoc-parent</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.1.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -31,12 +31,12 @@
         <repository>
             <id>bunjlabs.repo</id>
             <name>Bunjlabs Maven Repository</name>
-            <url>https://maven.bunjlabs.com/releases</url>
+            <url>http://maven.bunjlabs.com/releases</url>
         </repository>
         <snapshotRepository>
             <id>bunjlabs.repo.snapshots</id>
             <name>Bunjlabs Maven Snapshots Repository</name>
-            <url>https://maven.bunjlabs.com/snapshots</url>
+            <url>http://maven.bunjlabs.com/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -48,6 +48,7 @@
                 <configuration>
                     <preparationGoals>clean install deploy</preparationGoals>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <tagNameFormat>pjdoc-@{project.version}</tagNameFormat>
                  </configuration>
             </plugin>
             <plugin>
