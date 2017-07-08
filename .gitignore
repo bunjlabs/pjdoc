@@ -1,5 +1,6 @@
 fonts/
 target/
+pom.xml.versionsBackup
 *.pdf
 example-template.xml
 example.xml
