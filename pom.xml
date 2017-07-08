@@ -19,7 +19,7 @@
     <description>
         Java document layout and PDF generating engine builded on top of Apache PDFBox.
     </description>
-    
+
     <scm>
         <connection>scm:git:https://github.com/bunjlabs/pjdoc.git</connection>
         <developerConnection>scm:git:git@github.com:bunjlabs/pjdoc.git</developerConnection>
@@ -46,7 +46,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
-                    <preparationGoals>clean install</preparationGoals>
+                    <preparationGoals>clean install deploy</preparationGoals>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                  </configuration>
             </plugin>
